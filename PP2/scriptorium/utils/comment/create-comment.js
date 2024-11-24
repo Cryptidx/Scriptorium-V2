@@ -39,13 +39,34 @@ export default async function handlerCreateComment(req,res,which){
             blog: { connect: { id: blog_id } },
             description: description.trim(),
             author: { connect: { id: author } },
+            level: 0, // Default for top-level comments
         };
     
         if(which === 1){
-            // subcomment
             // Set the parent comment ID for subcomment
             //newData.parentId = comment_id;
+            // Subcomment logic: Parent ID and level calculation
+            if (!parentLevel) {
+                return res.status(400).json({ error: "Parent level must be provided for subcomments." });
+            }
+
             newData.parent = { connect: { id: comment_id } };
+            newData.level = parentLevel !== undefined ? parentLevel + 1 : null;
+
+            if (newData.level === null) {
+                // Fallback to fetch the parent's level from the database if not provided
+                const parentComment = await prisma.comment.findUnique({
+                    where: { id: comment_id },
+                    select: { level: true },
+                });
+
+                if (!parentComment) {
+                    return res.status(404).json({ error: "Parent comment not found." });
+                }
+
+                newData.level = parentComment.level + 1;
+            
+            }
         }
 
         const comment = await prisma.comment.create({
