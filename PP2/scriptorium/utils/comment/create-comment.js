@@ -28,7 +28,7 @@ export default async function handlerCreateComment(req,res,which){
             return res.status(400).json({ error: 'Invalid comment or blog ID' });
         }
     
-        const {description} = req.body;
+        const {description, parentLevel} = req.body;
 
         if (!description || typeof description !== 'string' || description.trim() === '') {
             return res.status(400).json({ error: "Description is required and cannot be empty" });
@@ -46,10 +46,7 @@ export default async function handlerCreateComment(req,res,which){
             // Set the parent comment ID for subcomment
             //newData.parentId = comment_id;
             // Subcomment logic: Parent ID and level calculation
-            if (!parentLevel) {
-                return res.status(400).json({ error: "Parent level must be provided for subcomments." });
-            }
-
+           
             newData.parent = { connect: { id: comment_id } };
             newData.level = parentLevel !== undefined ? parentLevel + 1 : null;
 
