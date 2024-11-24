@@ -22,9 +22,12 @@ model Template {
   ownerId      Int       // Foreign key to User
   owner        User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  forkedFromId Int?      // Nullable foreign key to reference another Template's ID
+  // Self-referential relationship
+  forkedFromId Int?      // Nullable foreign key to another Template
   forkedFrom   Template? @relation("ForkedTemplates", fields: [forkedFromId], references: [id])
-  forkedCopies Template[] @relation("ForkedTemplates")
+  forkedCopies Template[] @relation("ForkedTemplates") // All templates forked from this template
+
+  wasForked      Boolean   @default(false) // Indicates if this template was ever forked
 
   code         String    // File path to the code saved on the server
   language     String
@@ -90,6 +93,7 @@ model Comment {
 
   createdAt   DateTime  @default(now())
   parentId    Int?
+  level       Int       @default(0)
   parent      Comment?  @relation("Subcomments", fields: [parentId], references: [id], onDelete: Cascade)
   subcomments Comment[] @relation("Subcomments")
 
