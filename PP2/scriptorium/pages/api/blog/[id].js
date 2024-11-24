@@ -1,6 +1,7 @@
 import prisma from "@/utils/db"
 import processTags from "@/lib/helpers/create_tags";
 import { authMiddleware } from "@/lib/auth";
+import { getReportsForUserContent } from "@/utils/comment-blog/find-report";
 
 
 /*
@@ -166,6 +167,91 @@ async function handlerUpdate(req,res){
     // when it comes to editing the template links, other pathway
 }
 
+async function handlerGet(req, res) {
+    // GET handler
+    // expects id
+    const { id } = req.query;
+
+    if (req.method !== "GET"){
+        return res.status(405).json({ error: "must use GET method" });
+    }
+
+    // converts given id to a number
+    const blogId = parseInt(id);
+
+    // returns error if id is not a number
+    if (isNaN(blogId)) {
+        return res.status(400).json({error: "Invalid blog ID"});
+    }
+    
+    try {
+        // returns template based on given id
+        const blog = await prisma.blog.findUnique({
+            where: { id: blogId },
+            include: {
+                templates: {
+                    select: {
+                        id: true,
+                        title: true, // Include only the template ID and title
+                    },
+                },
+                tags: {
+                    select: {
+                        name: true, // Include only the tag name
+                    },
+                },
+                author: {
+                    select: {
+                        firstName: true,
+                        lastName: true, // Include only the author's first and last name
+                    },
+                },
+            },
+        });
+        
+        // returns error if no template found
+        if (!blog) {
+            return res.status(404).json({error: "No blog found with that ID"});
+        }
+
+        let report = null;
+
+        // Handle flagged blogs
+        if (blog.flagged) {
+            const user = await authMiddleware(req, res, { getFullUser: true });
+
+            if (!user) {
+                return res.status(403).json({ error: "Access denied to this blog." });
+            }
+
+            const isAdmin = user.role === "SYS_ADMIN";
+            const isAuthor = user.id === blog.authorId;
+
+            if (!isAdmin && !isAuthor) {
+                return res.status(403).json({ error: "Access denied to this blog." });
+            }
+
+            // Fetch report if user is an admin or the author
+            if (isAdmin || isAuthor) {
+                report = await getReportsForUserContent(user.id, "BLOG", [blogId]);
+            }
+        }
+
+        // Include report only if it was fetched
+        const enrichedBlog = {
+            ...blog,
+            ...(report ? { reports: report[blogId] || [] } : {}), // Attach reports if available
+        };
+
+        return res.status(200).json({ message: "Successfully found blog", blog: enrichedBlog });
+
+    } catch (error) {
+
+        // error when finding template
+        console.error(error.message);
+        return res.status(422).json({error: "could not fetch blog"});
+    }
+}
 
 export default async function handler(req, res) {
     // delete and update are restricted pathways 
@@ -185,11 +271,15 @@ export default async function handler(req, res) {
     switch(method){
         case "DELETE":
             await handlerDelete(req,res);
-            return
+            return;
 
         case "PUT":
             await handlerUpdate(req,res);
-            return  
+            return;
+
+        case "GET":
+            await handlerGet(req,res);
+            return;  
     }
 
     return res.status(400).json({ error: `Method ${method} Not Allowed`});

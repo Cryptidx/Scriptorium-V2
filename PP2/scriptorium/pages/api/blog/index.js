@@ -90,9 +90,11 @@ async function handlerGet(req,res){
         return res.status(405).json({error: "method not allowed"});
     }
 
-    // Chat gpt: Please help with searching for items 
-    // TODO: check if this is dereferencing properly 
-    const { title, content, tags, templateId, page = 1, limit = 10 } = req.query;
+    const { title, content, tags, templateIds, page = 1, limit = 10 } = req.query;
+
+    if(parseInt(limit) > 20){
+        return res.status(400).json({ error: "limit must be less than 20, limit too high." });
+    }
 
     // Check that title, content, and templateId are either undefined or strings
     if ((title && typeof title !== 'string') || 
@@ -104,10 +106,14 @@ async function handlerGet(req,res){
     // split all strings in tags query 
     const parsedTags = tags ? tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
 
+    // Parse and sanitize `templateIds` as an array of integers
+    const parsedTemplateIds = templateIds 
+    ? templateIds.split(",").map(id => parseInt(id.trim())).filter(id => !isNaN(id)) : [];
+
     const filters = { AND: [] };
     if (title) filters.AND.push({ title: { contains: title, mode: "insensitive" } });
     if (content) filters.AND.push({ description: { contains: content, mode: "insensitive" } });
-    //if (parsedTags && parsedTags.length > 0) filters.AND.push({ tags: { contains: JSON.stringify(parsedTags) } });
+    
     if (parsedTags && parsedTags.length > 0) {
         filters.AND.push({
             tags: {
@@ -117,7 +123,17 @@ async function handlerGet(req,res){
             }
         });
     }
-    if (templateId) filters.AND.push({ templates: { some: { id: Number(templateId) } } });
+
+    if (parsedTemplateIds.length > 0) {
+        filters.AND.push({
+            templates: {
+                some: {
+                    id: { in: parsedTemplateIds },
+                },
+            },
+        });
+    }
+    //if (templateId) filters.AND.push({ templates: { some: { id: Number(templateId) } } });
 
     try {
         const author = await authMiddleware(req, res, {getFullUser: true});
