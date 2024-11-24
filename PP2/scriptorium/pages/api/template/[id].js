@@ -3,29 +3,29 @@ import { authMiddleware } from "@/lib/auth";
 import processTags from "@/lib/helpers/create_tags";
 
 async function handlerDelete(req, res) {
-    // DELETE handler, restricted to users only 
-    // expects id
-    const { id } = req.query;
-
-    if (req.method !== "DELETE"){
-        return res.status(405).json({ error: "must use DELETE method"} );
-    }
-
-    // makes sure user is logged in
-    const author = await authMiddleware(req, res, { getFullUser: true });
-    if (!author) {
-        return res.status(401).json({ error: "Unauthorized. Please log in to create code." });
-    }
-
-    // gets templateId from query
-    const templateId = parseInt(id);
-
-    // returns error if templateId is not a Number
-    if (isNaN(templateId)) {
-        return res.status(400).json({ error: "Invalid template ID" });
-    }
-
     try {
+        // DELETE handler, restricted to users only 
+        // expects id
+        const { id } = req.query;
+
+        if (req.method !== "DELETE"){
+            return res.status(405).json({ error: "must use DELETE method"} );
+        }
+
+        // makes sure user is logged in
+        const author = await authMiddleware(req, res, { getFullUser: true });
+        if (!author) {
+            return res.status(401).json({ error: "Unauthorized. Please log in to create code." });
+        }
+
+        // gets templateId from query
+        const templateId = parseInt(id);
+
+        // returns error if templateId is not a Number
+        if (isNaN(templateId)) {
+            return res.status(400).json({ error: "Invalid template ID" });
+        }
+
         // checks if template exists
         const template = await prisma.template.findUnique({
           where: { id: templateId },
@@ -41,11 +41,17 @@ async function handlerDelete(req, res) {
           return res.status(403).json({error: "You do not have correct permission"});
         }
 
-        // deletes template
-        await prisma.template.delete({
-          where: { id: templateId },
+        // Unlink forkedFromId relations (set to null for any templates referencing this template)
+        await prisma.template.updateMany({
+            where: { forkedFromId: templateId },
+            data: { forkedFromId: null },
         });
-    
+
+        // Delete the template
+        await prisma.template.delete({
+            where: { id: templateId },
+        });
+            
         return res.status(200).json({message: "Successfully deleted template"});
     } 
 

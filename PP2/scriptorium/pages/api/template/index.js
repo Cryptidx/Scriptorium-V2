@@ -56,16 +56,27 @@ async function handlerCreate(req,res){
                 language,
                 title,
                 explanation,
-                ...(forkedFromId && { forkedFromId }), // optional field
+                ...(forkedFromId && { forkedFromId }), // optional field,
+                wasForked: !!forkedFromId,
                 tags: {
                     connect: processedTags, // many-to-many relation -> use connect
                 }
             },
 
             include: {
-                tags: true // returns tags of newly created blog
+                tags: true // returns tags o
             }
         });
+
+        // If the template is forked, fetch the parent template and its updated forked copies
+        if (forkedFromId) {
+            const parentTemplate = await prisma.template.findUnique({
+            where: { id: forkedFromId },
+            include: { forkedCopies: true },
+            });
+        
+            console.log("Parent template with updated forked copies:", parentTemplate);
+        }
     
         // returns entire template
         return res.status(201).json({ message: "template created successfully", template: template });
@@ -88,12 +99,16 @@ async function handlerGet(req,res){
     }
 
     // possible body requests
-    const { forkedFromId, code, language, title, explanation, tags, blogs, page = 1, limit = 10 } = req.query;
+    const { forkedFromId, code, language, title, explanation, tags, blogs, page = 1, limit = 10, onlyMine = false } = req.query;
+
+    if(parseInt(limit) > 20){
+        return res.status(400).json({ error: "limit must be less than 20, limit too high." });
+    }
 
     // transformes forkedFromId to a Number from a String
     var numForkedFromId = parseInt(forkedFromId);
 
-    var processedTags = [];
+    var processedTags = []; // tags example: GET /api/templates?tags=javascript,python&page=1&limit=5
 
     if (tags) {
         // splits string of tags into array
@@ -112,7 +127,7 @@ async function handlerGet(req,res){
 
     var processedBlogs = [];
     
-    if (blogs) {
+    if (blogs) { // example usage: /api/templates?blogs=1,2&page=1&limit=5
         // splits string of blogIds into array
         var parsedBlogs = blogs.split(',');
 
@@ -141,8 +156,17 @@ async function handlerGet(req,res){
     if (language) {filter.push({ language: { contains: language } });}
     if (explanation) {filter.push({ explanation: { contains: explanation } });}
     if (title) {filter.push({ title: { contains: title } });}
-    if (processedBlogs && processedBlogs.length > 0) { processedBlogs.forEach(blogId => {filter.push({ blogs: { some: { id: blogId }  } })}); }
+    /*if (processedBlogs && processedBlogs.length > 0) { processedBlogs.forEach(blogId => {filter.push({ blogs: { some: { id: blogId }  } })}); }
     if (processedTags && processedTags.length > 0) { processedTags.forEach(tag => {filter.push({ tags: { some: { id: tag.id }  } })}); }
+    */
+
+    if (processedBlogs.length > 0) {
+        filter.push({ blogs: { some: { id: { in: processedBlogs } } } });
+    }
+    
+    if (processedTags.length > 0) {
+        filter.push({ tags: { some: { id: { in: processedTags.map(tag => tag.id) } } } });
+    }
 
     // converts page to number
     var numPage = parseInt(page);
@@ -157,21 +181,62 @@ async function handlerGet(req,res){
     }
 
     try {
-        // finds templates based on filter
+        if (onlyMine === "true") {
+            // case where you get templates that you created if you are logged in
+            const authRes = await authMiddleware(req, res);
+            if (!authRes){
+                return res.status(401).json({ error: "Unauthorized: You must be logged in to view your own templates" });
+            }
+            const { userId } = authRes;
+            filter.push({ ownerId: userId });
+        }
+
+        // Calculate total count with the same filters
+        const totalCount = await prisma.template.count({
+            where: {
+                AND: filter,
+            },
+        });
+
+        // Fetch templates based on the filter
         const templates = await prisma.template.findMany({
             where: {
                 AND: filter,
             },
-            skip: (numPage - 1) * numLimit, // number of templates skipped equaled to this calculation
-            take: numLimit, // only take limit number of templates
-            include: { // alos returns blogs and tags
-                blogs: true,
+            skip: (numPage - 1) * numLimit,
+            take: numLimit,
+            include: {
+                blogs: true, 
+                /*
+                { // in the case we only want specific id information for blogs
+                    select: {
+                        id: true, // Only fetch blog IDs
+                        title: true, // Optionally fetch other fields
+                    },
+                },
+                */
                 tags: true,
             },
         });
 
-        // returns template
-        return res.status(200).json({ message: "successfully found templates", templates: templates, pagination: { page: numPage, limit: numLimit }  });
+        // Calculate pagination details
+        const totalPages = Math.ceil(totalCount / numLimit);
+        const currentPage = numPage;
+        const pagesLeft = totalPages - currentPage;
+
+        // Return templates with extended pagination info
+        return res.status(200).json({
+            message: "Successfully found templates",
+            templates,
+            pagination: {
+                total: totalCount, // Total number of matching templates
+                firstPage: 1, // First page is always 1
+                currentPage: currentPage, // Current page number
+                totalPages: totalPages, // Total pages
+                pagesLeft: pagesLeft > 0 ? pagesLeft : 0, // Non-negative pages left
+                limit: numLimit, // Limit per page
+            },
+        });
     } catch (error) {
 
         // error in getting template
