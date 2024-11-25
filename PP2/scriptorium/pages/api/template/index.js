@@ -37,6 +37,11 @@ async function handlerCreate(req,res){
     
     try {
         if (forkedFromId) {
+            // Check if forkedFromId is a valid number
+            if (!Number.isInteger(forkedFromId)) {
+                return res.status(400).json({ error: "forkedFromId must be a valid number" });
+            }
+
             // checks if forkedFromId passed is a real id
             const forkedTemplate = await prisma.template.findUnique({
                 where: { id: forkedFromId }
