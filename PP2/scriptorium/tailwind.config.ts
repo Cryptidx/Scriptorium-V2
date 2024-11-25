@@ -15,8 +15,12 @@ const config: Config = {
           dark: "#0f2440", // Your custom dark theme primary color
         },
         background: {
-          light: "#ffffff", // Light mode background
+          light: "#e6f0ff", // Light mode background
           dark: "#1a1a1a", // Dark mode background
+        },
+        overlay:{
+          light: "#ffffff",
+          dark: "#2d2d2d",
         },
         text: {
           light: "#000000", // Light mode text
