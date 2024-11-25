@@ -1,6 +1,9 @@
 import Header from "@/components/header";
 import { useUser } from "@/context/userContext";
 
+
+// should work for visitor and user
+// home is basically blogs
 const HomePage = () => {
     const { user } = useUser();
 

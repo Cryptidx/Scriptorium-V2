@@ -2,6 +2,7 @@ import Header from "@/components/header";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@/context/userContext";
+import Link from "next/link";
 
 const MainPage = () => {
   const [email, setemail] = useState("");
@@ -96,6 +97,11 @@ const MainPage = () => {
               Log In
             </button>
           </form>
+          
+          
+          <p className="my-[2%]"> Don't have an account?  
+            <Link href="/signup"> <span className="text-blue-[#132D50] underline">Create a Scriptorium account</span></Link>
+            </p>
 
         </div>
       </div>
