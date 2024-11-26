@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "target": "es6",
     "lib": ["dom", "es2015", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -19,6 +19,6 @@
     },
     "typeRoots": ["./node_modules/@types", "./types"],
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "./types/**/*.d.ts", "global.d.ts", "utils/comment-blog/find-report.js", "utils/comment/sorted-rating.js"],
   "exclude": ["node_modules"]
 }

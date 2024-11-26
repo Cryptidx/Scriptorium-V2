@@ -1,10 +1,23 @@
 import { PrismaClient } from '@prisma/client';
 
 declare global {
-  var prisma: PrismaClient | undefined;
+  // Define the Report type based on your Prisma schema
+  interface Report_helper {
+    contentId: number;
+    explanation: string;
+  }
 
-  interface CustomError extends Error {
+  type QueryMode = 'default' | 'insensitive';
+
+  var prisma: PrismaClient | undefined;
+  
+  class CustomError extends Error {
     code?: string; // Optional, as not all errors have a `code`
+
+    constructor(message: string, public statusCode: number) {
+      super(message);
+      this.name = "CustomError";
+    }
   }
 
   interface Tag {
@@ -85,5 +98,8 @@ declare global {
 
     createdAt: Date;
   }
+
+  type ReportMap = Record<number, Report[]>; // Replace `any` with the type of individual reports if available
+
   
 }
