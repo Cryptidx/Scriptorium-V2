@@ -11,7 +11,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children, title, subtitle, extraContent }) => {
   return (
     <div className="h-screen flex flex-col">
-      <Header />
+      {/* <Header /> */}
       <div className="px-6 py-6 space-y-4">
         {title && <h1 className="text-center text-4xl sm:text-5xl font-mono">{title}</h1>}
         {subtitle && (
@@ -19,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle, extraContent
         )}
         {extraContent && <div className="mt-4">{extraContent}</div>}
       </div>
-      <div className="flex-1 flex justify-start items-start px-6">{children}</div>
+      <div className="px-6 -my-[4%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">{children}</div>
     </div>
   );
 };
