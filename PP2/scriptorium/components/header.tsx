@@ -81,7 +81,8 @@ import Dropdown from "@/components/drop-downs/dropDown";
 import { DropdownProvider } from "./drop-downs/dropdownContext";
 import { MoonIcon, SunIcon } from "@/common/icons";
 import { DropdownItem } from '../types/dropdown.d';
-
+import { simulateBlogCreationAPI } from "@/components/mockApi"; // Mock API function for blog creation
+import BlogCreationModal from "./modals/BlogModal";
 
 const userItems: DropdownItem[] = [
   { label: "Profile", link: "/home" },
@@ -97,49 +98,143 @@ const userItems: DropdownItem[] = [
 // };
 
 
-const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }) => {
-    const { user, setUser } = useUser();
-    const { theme, toggleTheme } = useTheme();
-    const router = useRouter();
+// const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }) => {
+//     const { user, setUser } = useUser();
+//     const { theme, toggleTheme } = useTheme();
+//     const router = useRouter();
 
     
   
 
-    const login = user != null;
+//     const login = user != null;
 
-    const handleLogout = () => {
-        setUser(null);
-        router.push("/");
-    };
+//     const handleLogout = () => {
+//         setUser(null);
+//         router.push("/");
+//     };
 
-    const handleLogo = () => {
-        router.push(login ? "/home" : "/");
-    };
+//     const handleLogo = () => {
+//         router.push(login ? "/home" : "/");
+//     };
 
-    const handleLogin = () =>{
-      router.push("/");
-    }
+//     const handleLogin = () =>{
+//       router.push("/");
+//     }
 
-    return (
-        <header className="flex justify-between items-center p-4 bg-[#132D5F] text-white">
-            {/* Logo */}
-            <div>
-                <button onClick={handleLogo} className="flex justify-between font-mono font-bold text-2xl">
-                    <img src="/icons/logo.png" className="object-scale-down h-10 w-10" alt="Logo" />
-                    <p className="px-2 content-center">Scriptorium</p>
-                </button>
-            </div>
+//     return (
+//         <header className="flex justify-between items-center p-4 bg-[#132D5F] text-white">
+//             {/* Logo */}
+//             <div>
+//                 <button onClick={handleLogo} className="flex justify-between font-mono font-bold text-2xl">
+//                     <img src="/icons/logo.png" className="object-scale-down h-10 w-10" alt="Logo" />
+//                     <p className="px-2 content-center">Scriptorium</p>
+//                 </button>
+//             </div>
 
-            {/* Search Bar */}
-            {showSearchBar && <SearchBar />}
+//             {/* Search Bar */}
+//             {showSearchBar && <SearchBar />}
 
             
 
-            {/* Navigation */}
-            <nav className="flex items-center space-x-5">
+//             {/* Navigation */}
+//             <nav className="flex items-center space-x-5">
        
+//         <PageDropDown
+//         id="burgerDropdown"
+//           trigger={<img src="/icons/menu.png" className="object-scale-down h-10 w-10" />}
+//           items={[
+//             { label: "Home", link: "/home" },
+//             { label: "Code", link: "/editor" },
+//           ]}
+//         />
+
+// <PageDropDown
+//           id="profiledropdown"
+//           trigger={<img src="/avatar_images/pfp1.png" className="object-scale-down h-10 w-10 rounded-full" />}
+//           items= {login ? userItems : null }
+//         />
+
+//                 {/* Dynamic Button */}
+//                 {login ? (
+//                     <Link href="/createBlog">
+//                         <button className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition">
+//                             Create Blog
+//                         </button>
+//                     </Link>
+//                 ) : (
+//                     <Link href="/">
+//                         <button 
+//                         onClick={handleLogin}
+//                         className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition">
+//                             Log In
+//                         </button>
+//                     </Link>
+//                 )}
+
+//                 {/* Logout Button */}
+//                 {/* {login && (
+//                     <button onClick={handleLogout} className="bg-red-500 px-4 py-2 rounded hover:bg-red-700 transition">
+//                         Logout
+//                     </button>
+//                 )} */}
+
+//                 {/* Theme Toggle */}
+//                 <button
+//                     onClick={toggleTheme}
+//                     className="px-4 py-2 bg-blue-500 dark:bg-yellow-400 text-white dark:text-black rounded transition"
+//                 >
+//                     {theme === "light" ? <MoonIcon className="h-6 w-6" /> : <SunIcon className="h-6 w-6" />}
+//                 </button>
+//             </nav>
+//         </header>
+//     );
+// };
+
+// export default Header;
+
+
+
+
+const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }) => {
+  const { user, setUser } = useUser();
+  const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
+  // const login = user != null;
+
+  const login = true;
+  const [showModal, setShowModal] = useState(false);
+
+  const handleCreateBlog = async (data: { title: string; description: string; tags: string[] }) => {
+    try {
+      // Simulate API call to create blog
+      const newBlog = await simulateBlogCreationAPI(data);
+
+      // Route to the new blog page
+      router.push(`/blog/${newBlog.id}`);
+      
+
+    } catch (error) {
+      console.error("Failed to create blog:", error);
+    }
+  };
+
+  return (
+    <header className="flex justify-between items-center p-4 bg-[#132D5F] text-white">
+      {/* Logo */}
+      <div>
+        <button
+          onClick={() => router.push(login ? "/home" : "/")}
+          className="flex justify-between font-mono font-bold text-2xl"
+        >
+          <img src="/icons/logo.png" className="object-scale-down h-10 w-10" alt="Logo" />
+          <p className="px-2 content-center">Scriptorium</p>
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex items-center space-x-5">
         <PageDropDown
-        id="burgerDropdown"
+          id="burgerDropdown"
           trigger={<img src="/icons/menu.png" className="object-scale-down h-10 w-10" />}
           items={[
             { label: "Home", link: "/home" },
@@ -147,46 +242,51 @@ const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }
           ]}
         />
 
-<PageDropDown
+        <PageDropDown
           id="profiledropdown"
           trigger={<img src="/avatar_images/pfp1.png" className="object-scale-down h-10 w-10 rounded-full" />}
-          items= {login ? userItems : null }
+          items={login ? [{ label: "Profile", link: "/home" }, { label: "Logout", link: "/" }] : null}
         />
 
-                {/* Dynamic Button */}
-                {login ? (
-                    <Link href="/createBlog">
-                        <button className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition">
-                            Create Blog
-                        </button>
-                    </Link>
-                ) : (
-                    <Link href="/">
-                        <button 
-                        onClick={handleLogin}
-                        className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition">
-                            Log In
-                        </button>
-                    </Link>
-                )}
+        {/* Dynamic Button */}
+        {login ? (
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Create Blog
+          </button>
+        ) : (
+          <button
+            onClick={() => router.push("/")}
+            className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Log In
+          </button>
+        )}
 
-                {/* Logout Button */}
-                {/* {login && (
-                    <button onClick={handleLogout} className="bg-red-500 px-4 py-2 rounded hover:bg-red-700 transition">
-                        Logout
-                    </button>
-                )} */}
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="px-4 py-2 bg-blue-500 dark:bg-yellow-400 text-white dark:text-black rounded transition"
+        >
+          {theme === "light" ? <MoonIcon className="h-6 w-6" /> : <SunIcon className="h-6 w-6" />}
+        </button>
+      </nav>
 
-                {/* Theme Toggle */}
-                <button
-                    onClick={toggleTheme}
-                    className="px-4 py-2 bg-blue-500 dark:bg-yellow-400 text-white dark:text-black rounded transition"
-                >
-                    {theme === "light" ? <MoonIcon className="h-6 w-6" /> : <SunIcon className="h-6 w-6" />}
-                </button>
-            </nav>
-        </header>
-    );
+      {/* Blog Creation Modal */}
+      {showModal && (
+        <div className="text-black">
+          <BlogCreationModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onSubmit={handleCreateBlog}
+        />
+        </div>
+        
+      )}
+    </header>
+  );
 };
 
 export default Header;
