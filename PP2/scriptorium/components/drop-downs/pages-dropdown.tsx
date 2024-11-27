@@ -443,7 +443,7 @@ interface DropdownItem {
 interface PageDropDownProps {
   id: string; // Unique identifier for the dropdown
   trigger: React.ReactNode | string; // Trigger element or default text for the dropdown
-  items?: DropdownItem[]; // List of items with labels and links
+  items?: DropdownItem[] | null; // List of items with labels and links
   updateTriggerText?: boolean; // Optional param to update trigger text
 }
 

@@ -108,9 +108,14 @@ interface DropdownItem {
   link: string;
 }
 
+// const userItems: DropdownItem[] = [
+//   { label: "Profile", link: "/home" },
+//   { label: "Settings", link: "/settings" },
+//   { label: "Logout", link: "/" },
+// ];
+
 const userItems: DropdownItem[] = [
   { label: "Profile", link: "/home" },
-  { label: "Settings", link: "/settings" },
   { label: "Logout", link: "/" },
 ];
 
@@ -136,7 +141,7 @@ const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }
     
   
 
-    const login = true;
+    const login = user != null;
 
     const handleLogout = () => {
         setUser(null);
@@ -196,7 +201,7 @@ const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }
 <PageDropDown
           id="profiledropdown"
           trigger={<img src="/avatar_images/pfp1.png" className="object-scale-down h-10 w-10 rounded-full" />}
-          items= {login ? userItems : visitorItems}
+          items= {login ? userItems : null }
         />
 
         

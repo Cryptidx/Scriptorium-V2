@@ -7,7 +7,7 @@ interface ReportCreationModalProps {
   onSubmit: (data: { explanation: string }) => void;
 }
 
-const ReportCreationModal: React.FC<ReportCreationModalProps> = ({ isOpen, onClose, onSubmit }) => {
+const ReportCreationModal: React.FC<ReportCreationModalProps> = ({title, isOpen, onClose, onSubmit }) => {
   const [explanation, setExplanation] = useState("");
 
   if (!isOpen) return null;
@@ -25,7 +25,7 @@ const ReportCreationModal: React.FC<ReportCreationModalProps> = ({ isOpen, onClo
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
     <div className="bg-white dark:bg-gray-800 w-[90%] max-w-md h-[70vh] p-6 rounded-lg shadow-lg overflow-y-auto">
-    <h2 className="text-lg font-bold">Create report on: title </h2>
+    <h2 className="text-lg font-bold">Create report on: {title} </h2>
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
           <div>
           <label

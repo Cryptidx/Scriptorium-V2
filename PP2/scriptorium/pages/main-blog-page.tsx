@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import NestedComments from "./nested-comments";
 import Header from "@/components/header";
 import PageDropDown from "@/components/drop-downs/pages-dropdown";
@@ -6,6 +6,12 @@ import { ThumbsUp, ThumbsDown, ThumbsUpF, ThumbsDownF, Flag} from "@/common/icon
 import VoteButton from "@/components/vote-button";
 import CommentButton from "@/components/comment-button";
 import { DropdownProvider } from "@/components/drop-downs/dropdownContext";
+import CommentSection from "@/components/comment-section";
+import CommentButtonF from "@/components/comment-button";
+import ReportCreationModal from "@/components/modals/ReportCreationModal";
+import { useRouter } from "next/router";
+import BlogCreationModal from "@/components/modals/BlogModal"; // Adjust path as necessary
+import { fetchBlogById, fetchCurrentUser } from "@/components/mockApi"; // Adjust path as necessary
 
 
 interface CommentProps {
@@ -134,6 +140,19 @@ const handleAddComment = async (): Promise<number> => {
 
 
 const BlogPageMain = () => {
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportTitle, setReportTitle] = useState("");
+
+    const handleFlagClick = (title: string) => {
+      setReportTitle(title); // Set the title of the item being reported
+      setShowReportModal(true); // Show the modal
+    };
+
+    const handleReportSubmit = (data: { explanation: string }) => {
+      console.log("Report Submitted for:", reportTitle, "Data:", data);
+      setShowReportModal(false); // Close the modal after submission
+    };
+
     return (
       <div className="h-screen flex flex-col ">
   
@@ -191,9 +210,16 @@ const BlogPageMain = () => {
         </div>
 
         <div className=" inline-flex items-center  bg-gray-200 rounded-full shadow-sm border-gray-500 border-2 pr-2 pl-2">
-            <button className="text-xs font-bold"><Flag className=" object-scale-down h-5 w-5" /></button>
+            <button  onClick={() => handleFlagClick("Blog Title")} className="text-xs font-bold"><Flag className=" object-scale-down h-5 w-5" /></button>
         </div>
         </div>
+
+        <ReportCreationModal
+        title={reportTitle}
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        onSubmit={handleReportSubmit}
+      />
 
        
         
@@ -219,6 +245,7 @@ const BlogPageMain = () => {
           ]}
         />
         
+       
         
 
           
@@ -227,7 +254,9 @@ const BlogPageMain = () => {
         
       
         {/* Pass `comments` to `NestedComments` without needing to specify `parentId` */}
-        <NestedComments comments={comments} />
+        {/* <NestedComments comments={comments} /> */}
+
+        <CommentSection />
         </div>
        
 
@@ -248,3 +277,77 @@ const BlogPageMain = () => {
   };
   
   export default BlogPageMain;
+
+
+
+// const BlogPageMain = () => {
+//   const [blog, setBlog] = useState<any>(null);
+//   const [currentUser, setCurrentUser] = useState<any>(null);
+//   const [showEditModal, setShowEditModal] = useState(false);
+//   const router = useRouter();
+//   const { id } = router.query;
+
+//   useEffect(() => {
+//     const fetchBlogData = async () => {
+//       const blogData = await fetchBlogById(id as string);
+//       setBlog(blogData);
+//     };
+
+//     const fetchUserData = async () => {
+//       const userData = await fetchCurrentUser();
+//       setCurrentUser(userData);
+//     };
+
+//     fetchBlogData();
+//     fetchUserData();
+//   }, [id]);
+
+//   const handleEditSubmit = (data: { title: string; description: string; tags: string[] }) => {
+//     // Simulate API call to update blog
+//     console.log("Edited Blog Data:", data);
+//     setShowEditModal(false);
+//     window.location.reload(); // Reload to reflect changes
+//   };
+
+//   if (!blog || !currentUser) {
+//     return <div>Loading...</div>;
+//   }
+
+//   return (
+//     <div className="h-screen flex flex-col ">
+//       <header className="p-4 bg-gray-100">
+//         <h1 className="text-3xl font-bold">{blog.title}</h1>
+//         <div className="text-gray-600">by {blog.author}</div>
+//         <div className="flex flex-wrap gap-2 mt-2">
+//           {blog.tags.map((tag: string, index: number) => (
+//             <span key={index} className="px-2 py-1 text-xs text-white bg-blue-500 rounded-md">
+//               {tag}
+//             </span>
+//           ))}
+//         </div>
+//         {currentUser.id === blog.authorId && (
+//           <button
+//             onClick={() => setShowEditModal(true)}
+//             className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded-lg"
+//           >
+//             Edit Blog
+//           </button>
+//         )}
+//       </header>
+
+//       <main className="flex-1 p-4">
+//         <p>{blog.description}</p>
+//       </main>
+
+//       {showEditModal && (
+//         <BlogCreationModal
+//           isOpen={showEditModal}
+//           onClose={() => setShowEditModal(false)}
+//           onSubmit={handleEditSubmit}
+//         />
+//       )}
+//     </div>
+//   );
+// };
+
+// export default BlogPageMain;
