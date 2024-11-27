@@ -1,14 +1,16 @@
 import React, { useState } from "react";
-import BlogCreationModal from "@/components/modals/BlogCreationModal";
+import BlogCreationModal from "@/components/modals/BlogModal";
 import ReportCreationModal from "@/components/modals/ReportCreationModal";
-import TemplateCreationModal from "@/components/modals/TemplateCreationModal";
+import TemplateCreationModal from "@/components/modals/TemplateModal";
 import TemplateSelectionModal from "@/components/modals/BlogTemplateModal";
+import UserEditModal from "@/components/modals/UserModal";
 
 const TestPage: React.FC = () => {
   const [showBlogModal, setShowBlogModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showBlogTemplateModal, setShowBlogTemplateModal] = useState(false);
+  const [showUserModal, setShowUserModal] = useState(false);
 
   const handleBlogSubmit = (data: { title: string; description: string; tags: string[] }) => {
     console.log("Blog Data Submitted:", data);
@@ -20,7 +22,7 @@ const TestPage: React.FC = () => {
 
   // Handle Template Submission  // Handle Template Submission
   const handleTemplateSubmit = (data: {
-    forkedFromId?: number;
+    forkedFromId?: number | null;
     code: string;
     language: string;
     title: string;
@@ -33,6 +35,11 @@ const TestPage: React.FC = () => {
   const handleTemplateBlog = (selectedTemplate: any) => {
     console.log("Selected Template:", selectedTemplate);
     setShowBlogTemplateModal(false);
+  };
+
+  const handleUserSubmit = (data: { firstName: string; lastName: string; email: string; phoneNumber: string; avatar: string | null; })=> {
+    console.log("User Data Submitted:", data);
+    setShowUserModal(false);
   };
 
 
@@ -64,6 +71,13 @@ const TestPage: React.FC = () => {
       >
         Open Blog Template Modal
       </button>
+
+      <button 
+        onClick={() => setShowUserModal(true)}
+        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+      >
+        Open User Modal
+      </button>
       </div>
 
       {/* Blog Modal */}
@@ -93,6 +107,18 @@ const TestPage: React.FC = () => {
         onClose={() => setShowBlogTemplateModal(false)}
         onSubmit={handleTemplateBlog}
       />
+
+      {/* User Modal */}
+      <UserEditModal
+        isOpen={showUserModal}
+        onClose={() => setShowUserModal(false)}
+        onSubmit={handleUserSubmit} defaultValues={{
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          avatar: "/avatar_images/pfp2/png"
+        }}      />
     </div>
   );
 };

@@ -1,26 +1,43 @@
 import React, { useState } from "react";
 import Select from "react-select";
 import { languageList } from "@/types/constants";
-import CodeEditorComponent from "@/components/editor/Coding"; // Adjust import path as needed
+import Editor from "@monaco-editor/react";
 
 interface TemplateCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { language: string; title: string; code: string; explanation: string; tags: string[] }) => void;
+  onSubmit: (data: {
+    language: string;
+    title: string;
+    code: string;
+    explanation: string;
+    tags: string[];
+    forkedFromId?: number | null;
+  }) => void;
+  defaultValues?: {
+    forkedFromId?: number | null;
+    code: string;
+    language: string;
+    title: string;
+    explanation: string;
+    tags: string[];
+  }; // Default values for updating
 }
 
 const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  defaultValues,
 }) => {
   const [formData, setFormData] = useState({
-    title: "",
-    explanation: "",
-    tags: [""],
+    forkedFromId: defaultValues?.forkedFromId || null,
+    code: defaultValues?.code || "",
+    language: defaultValues?.language || "javascript",
+    title: defaultValues?.title || "",
+    explanation: defaultValues?.explanation || "",
+    tags: defaultValues?.tags || [""],
   });
-  const [code, setCode] = useState("// Start coding here!"); // Code state for the editor
-  const [language, setLanguage] = useState("javascript"); // Language state for the editor
   const [error, setError] = useState<string>("");
 
   if (!isOpen) return null;
@@ -47,7 +64,7 @@ const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     }));
 
   const validateForm = () => {
-    if (!formData.title || !code.trim() || !language || !formData.explanation) {
+    if (!formData.title || !formData.language || !formData.code || !formData.explanation) {
       setError("All fields must be filled out.");
       return false;
     }
@@ -62,16 +79,24 @@ const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return; // Stop submission if validation fails
-    onSubmit({ ...formData, code, language });
+    onSubmit(formData);
     onClose();
   };
 
+  const handleLanguageChange = (selected: { value: string; label: string } | null) => {
+    setFormData((prev) => ({ ...prev, language: selected?.value || "javascript" }));
+  };
+
+  const handleCodeChange = (value: string | undefined) => {
+    setFormData((prev) => ({ ...prev, code: value || "" }));
+  };
+
   return (
+
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-gray-800 w-[90%] h-[80vh] shadow-lg px-10 py-6 rounded-lg overflow-hidden">
-        <h2 className="text-lg font-bold">Create Template</h2>
+    <div className="bg-white dark:bg-gray-800 w-[90%] h-[80vh] shadow-lg px-10 py-6 rounded-lg overflow-y-auto">
+    <h2 className="text-lg font-bold">Create Template</h2>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {/* Title */}
           <div>
             <label htmlFor="template-title" className="block text-sm font-medium text-gray-700">
               Title
@@ -87,38 +112,51 @@ const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
               required
             />
           </div>
-
-          {/* Code Editor Component */}
           <div>
-            <CodeEditorComponent
-              language={language}
-              code={code}
-              setCode={setCode} // Updates the code in the parent modal
-              onRun={() => alert("Run logic can be implemented here")}
-              onSave={() => alert("Save logic can be implemented here")}
-              onLanguageChange={setLanguage} // Updates the language state in the modal
-              title="Code Editor"
+            <label htmlFor="template-language" className="block text-sm font-medium text-gray-700">
+              Language
+            </label>
+            <Select
+              options={languageList}
+              defaultValue={languageList.find((opt) => opt.value === formData.language)}
+              onChange={handleLanguageChange}
+              className="mt-1"
             />
           </div>
-
-          {/* Explanation */}
           <div>
-            <label htmlFor="template-explanation" className="block text-sm font-medium text-gray-700">
-              Explanation
+            <label htmlFor="template-code" className="block text-sm font-medium text-gray-700">
+              Code
             </label>
-            <textarea
-              id="template-explanation"
-              name="explanation"
-              value={formData.explanation}
-              onChange={handleChange}
-              className="mt-1 p-2 w-full border rounded-md"
-              rows={4}
-              placeholder="Provide a detailed explanation"
-              required
-            ></textarea>
+            {/* Replace textarea with Monaco Editor */}
+            <div className="border rounded-md overflow-hidden">
+              <Editor
+                height="200px" // Adjust height as needed
+                language={formData.language} // Dynamically set language
+                value={formData.code}
+                onChange={handleCodeChange}
+                theme="vs-white"
+                options={{
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </div>
           </div>
-
-          {/* Tags */}
+          <div>
+          <label htmlFor="template-explanation" className="block text-sm font-medium text-gray-700">
+            Description
+          </label>
+          <textarea
+            id="template-explanation"
+            name="explanation"
+            value={formData.explanation}
+            onChange={handleChange}
+            className="mt-1 p-2 w-full border rounded-md"
+            rows={4}
+            placeholder="Enter the template explanation"
+            required
+          ></textarea>
+        </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Tags</label>
             {formData.tags.map((tag, index) => (
@@ -150,11 +188,6 @@ const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
               Add Tag
             </button>
           </div>
-
-          {/* Error Message */}
-          {error && <p className="text-red-500">{error}</p>}
-
-          {/* Submit and Cancel */}
           <div className="flex justify-end space-x-2">
             <button
               type="button"
