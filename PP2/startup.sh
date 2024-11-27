@@ -45,6 +45,24 @@ fi
 #     exit 1
 # fi
 
+BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# docker rmi runtime-java
+
+docker build --no-cache -t runtime-c "$BASE_DIR/docker/c"
+docker build --no-cache -t runtime-cpp "$BASE_DIR/docker/cpp"
+docker build --no-cache -t runtime-go "$BASE_DIR/docker/go"
+docker build --no-cache -t runtime-java "$BASE_DIR/docker/java"
+docker build --no-cache -t runtime-javascript "$BASE_DIR/docker/javascript"
+docker build --no-cache -t runtime-perl "$BASE_DIR/docker/perl"
+docker build --no-cache -t runtime-python "$BASE_DIR/docker/python"
+docker build --no-cache -t runtime-r "$BASE_DIR/docker/r"
+docker build --no-cache -t runtime-ruby "$BASE_DIR/docker/ruby"
+docker build --no-cache -t runtime-rust "$BASE_DIR/docker/rust"
+docker build --no-cache -t runtime-swift "$BASE_DIR/docker/swift"
+
+docker images
+
 # Step 3: Check for SQLite installation
 if ! command -v sqlite3 &> /dev/null
 then
