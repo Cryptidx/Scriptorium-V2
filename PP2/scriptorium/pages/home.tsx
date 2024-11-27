@@ -9,6 +9,8 @@ import CommentPage from "./comment-page";
 import TemplatePage from "./template-page";
 import { useDropdownContext } from "@/components/drop-downs/dropdownContext";
 import { DropdownItem } from "@/types/dropdown";
+import { useState } from "react";
+import PaginationButton from "@/components/buttons/Paginating"; // Import the reusable component
 
 // should work for visitor and user
 // home is basically blogs
@@ -27,6 +29,25 @@ const HomePage = () => {
       (state) => state.id === "blogDropdown"
     );
 
+    const [paging, setPaging] = useState({
+      next: "dummy-next", // Replace with actual API response
+      previous: "dummy-previous", // Replace with actual API response
+    });
+  
+    const fetchPage = (direction: "next" | "previous") => {
+      const page = paging[direction];
+      if (!page) return;
+  
+      console.log(`Fetching ${direction} page:`, page);
+  
+      // Replace the following with actual API call logic
+      setPaging({
+        ...paging,
+        next: direction === "next" ? "dummy-next-updated" : paging.next,
+        previous: direction === "previous" ? "dummy-previous-updated" : paging.previous,
+      });
+    };
+  
     const renderContent = () => {
       switch (blogDropdownState?.selectedLabel) {
         case "Blogs":
@@ -43,7 +64,7 @@ const HomePage = () => {
     return (
     <div className="h-screen flex flex-col">
   
-        <div className="flex flex-row px-16 py-3 space-x-5 font-mono text-sm font-bold text-gray-500">
+  <div className="flex flex-row items px-16 py-3 space-x-5 font-mono text-sm font-bold text-gray-500 mb-6">
 
         {/* <Header showSearchBar={true}></Header> */}
 
@@ -74,19 +95,30 @@ const HomePage = () => {
 </button>
 
 
+        {/* Dropdown for Sorting */}
         <PageDropDown
-        id="sort"
-          trigger={  
-            <button className="px-4 py-2 rounded-full hover:bg-blue-200 transition ">Sort by <span className="inline-block -translate-y-0.5">⌄</span></button>
+          id="sort"
+          trigger={
+            <button className="px-4 py-2 rounded-full hover:bg-blue-200 transition">
+              Sort by <span className="inline-block -translate-y-0.5">⌄</span>
+            </button>
           }
           items={
             blogDropdownState?.selectedLabel !== "Templates"
-              ? [{ label: "Juciest", link: "/home" }]
+              ? [{ label: "Juiciest", link: "/home" }]
               : null // No items when "Templates" is selected
           }
         />
-  
-        </div>
+
+        {/* Paging Controls */}
+        <PaginationButton
+          direction="next"
+          disabled={!paging.next} // Disable if no next page is available
+          onClick={() => fetchPage("next")}
+          label="Next" // Customize the label
+          iconSize="w-5 h-5" // Optional: Customize icon size
+        />
+      </div>
         
 
         {/* <BlogPage></BlogPage> */}
