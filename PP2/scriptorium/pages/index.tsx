@@ -11,7 +11,6 @@ const MainPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { user, setUser } = useUser();
   const router = useRouter();
 
 
@@ -20,32 +19,41 @@ const MainPage = () => {
     setLoading(true);
     setErrorMessage("");
 
+    console.log(email, password);
+  
     try {
-      const response = await fetch("api/users/login", {
+      const response = await fetch("/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
-      const { id, firstName, role } = data.user;
-
-      setUser({ id, firstName, role });
-
+  
       if (!response.ok) {
-        setErrorMessage(data.error);
-      } else {
-        router.push("/home");
+        setErrorMessage(data.error || "Login failed. Please try again.");
+        return;
       }
-
+  
+      // Extract tokens and user data from the response
+      const { accessToken, refreshToken } = data;
+  
+      // Store tokens in local storage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+    
+      // Redirect to home page
+      router.push("/home");
     } catch (error) {
-      console.log(error);
+      console.error("Error during login:", error);
+      setErrorMessage("An unexpected error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="h-screen flex flex-col">
