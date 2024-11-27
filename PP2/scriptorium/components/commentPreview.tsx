@@ -28,7 +28,7 @@ const CommentPreview: React.FC<CommentPreviewProps> = ({ author, description, up
             <p>{downvotes}</p>
             </div>
 
-            <Link href="/main-blog-page" > <p className="underline">see blog </p></Link>
+            <p className="underline">see blog </p>
             
           </div>
 
