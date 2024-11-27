@@ -11,7 +11,7 @@ export default async function handler(req: AuthRequest, res: UserInfoResponse) {
         const user = await authMiddleware(req, res, {getFullUser: true});
         if (!user) return; // Authentication failed, response already sent
 
-        res.status(201).json({
+        res.status(200).json({
             message: 'User info fetched successfully',
             user: {
               id: user.id,

@@ -1,6 +1,7 @@
 import Header from "@/components/header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { defaultLocalStorage } from "@/utils/default";
 
 const SignupPage: React.FC = () => {
   const router = useRouter();
@@ -15,6 +16,10 @@ const SignupPage: React.FC = () => {
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    defaultLocalStorage();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -73,12 +78,14 @@ const SignupPage: React.FC = () => {
       // Extract tokens and user data
       const { accessToken, refreshToken } = loginData;
 
-      // Store tokens in local storage
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-
+    // Store tokens in local storage
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+      
       // Redirect user to avatar selection or another page
+      localStorage.setItem("accessAvatarSelection", "true");
       router.push("/avatar-selection");
+
     } catch (error) {
       console.error("Error during signup:", error);
       setErrorMessage("An unexpected error occurred. Please try again later.");

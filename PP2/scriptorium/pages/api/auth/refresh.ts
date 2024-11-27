@@ -32,6 +32,6 @@ export default async function handler(req: RefreshTokenRequest, res: RefreshToke
     res.status(200).json({ message: 'Token refreshed successfully', accessToken:accessToken });
   } catch (error) {
     console.error('Error in refresh token handler:', error);
-    res.status(403).json({ error: 'Invalid or expired refresh token' });
+    res.status(401).json({ error: 'Invalid or expired token.' });
   }
 }

@@ -18,4 +18,8 @@ export async function defaultLocalStorage() {
     if (!localStorage.getItem("theme")) {
         localStorage.setItem("theme", "light");
     }
+
+    if(!localStorage.getItem("accessAvatarSelection")) {
+        localStorage.setItem("accessAvatarSelection", "false");
+    }
 }

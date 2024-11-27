@@ -1,7 +1,7 @@
 import Header from "@/components/header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useUser } from "@/context/userContext";
+import { defaultLocalStorage } from "@/utils/default";
 import Link from "next/link";
 import { DropdownProvider } from "@/components/drop-downs/dropdownContext";
 
@@ -13,6 +13,9 @@ const MainPage = () => {
 
   const router = useRouter();
 
+  useEffect(() => {
+    defaultLocalStorage();
+  }, []);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
