@@ -1,17 +1,29 @@
 import React, { useState } from "react";
+import Select from "react-select";
+import { languageList } from "@/types/constants";
 
-interface BlogCreationModalProps {
+interface TemplateCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { title: string; description: string; tags: string[] }) => void;
+  onSubmit: (data: { language: string; title: string; code: string, explanation: string, tags: string[] }) => void;
 }
 
-const BlogCreationModal: React.FC<BlogCreationModalProps> = ({ isOpen, onClose, onSubmit }) => {
+
+const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+}) => {
   const [formData, setFormData] = useState({
+    forkedFromId: null,
+    code: "",
+    language: "javascript",
     title: "",
-    description: "",
+    explanation: "",
     tags: [""],
   });
+
+  const [error, setError] = useState<string>("");
 
   if (!isOpen) return null;
 
@@ -36,50 +48,75 @@ const BlogCreationModal: React.FC<BlogCreationModalProps> = ({ isOpen, onClose, 
       tags: prev.tags.filter((_, i) => i !== index),
     }));
 
+  const validateForm = () => {
+    if (!formData.title || !formData.language || !formData.code || !formData.explanation) {
+      setError("All fields must be filled out.");
+      return false;
+    }
+    if (formData.tags.length === 0 || formData.tags.some((tag) => tag.trim() === "")) {
+      setError("Please add at least one tag and ensure no tag is empty.");
+      return false;
+    }
+    setError(""); // Clear error if validation passes
+    return true;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.description || formData.tags.length === 0) {
-      alert("Please fill in all fields and provide at least one tag.");
-      return;
-    }
+    if (!validateForm()) return; // Stop submission if validation fails
     onSubmit(formData);
     onClose();
   };
 
+  const handleLanguageChange = (selected: { value: string; label: string } | null) => {
+    setFormData((prev) => ({ ...prev, language: selected?.value || "javascript" }));
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-gray-800 w-[90%] max-w-md p-6 rounded-lg shadow-lg">
-        <h2 className="text-lg font-bold">Create Blog</h2>
+    <div className="bg-white dark:bg-gray-800 w-[90%] max-w-md h-[70vh] p-6 rounded-lg shadow-lg overflow-y-auto">
+    <h2 className="text-lg font-bold">Create Template</h2>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div>
-            <label htmlFor="blog-title" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="template-title" className="block text-sm font-medium text-gray-700">
               Title
             </label>
             <input
               type="text"
-              id="blog-title"
+              id="template-title"
               name="title"
               value={formData.title}
               onChange={handleChange}
               className="mt-1 p-2 w-full border rounded-md"
-              placeholder="Enter the blog title"
+              placeholder="Enter the template title"
               required
             />
           </div>
           <div>
-            <label htmlFor="blog-description" className="block text-sm font-medium text-gray-700">
-              Description
+            <label htmlFor="template-code" className="block text-sm font-medium text-gray-700">
+              Code
             </label>
             <textarea
-              id="blog-description"
-              name="description"
-              value={formData.description}
+              id="template-code"
+              name="code"
+              value={formData.code}
               onChange={handleChange}
               className="mt-1 p-2 w-full border rounded-md"
               rows={4}
-              placeholder="Enter the blog description"
+              placeholder="Enter the template code"
               required
             ></textarea>
+          </div>
+          <div>
+            <label htmlFor="template-language" className="block text-sm font-medium text-gray-700">
+              Language
+            </label>
+            <Select
+              options={languageList}
+              defaultValue={languageList.find((opt) => opt.value === formData.language)}
+              onChange={handleLanguageChange}
+              className="mt-1"
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Tags</label>
@@ -130,4 +167,4 @@ const BlogCreationModal: React.FC<BlogCreationModalProps> = ({ isOpen, onClose, 
   );
 };
 
-export default BlogCreationModal;
+export default TemplateCreationModal;
