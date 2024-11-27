@@ -3,8 +3,8 @@ import { RunRequest, RunResponse } from '@/types/run';
 
 export default async function handler(req: RunRequest,res: RunResponse) {
     // makes sure API call is a GET request
-    if (req.method !== "GET") {
-        return res.status(405).json({ error: "must use GET call"} );
+    if (req.method !== "POST") {
+        return res.status(405).json({ error: "must use POST call"} );
     }
 
     // destructures body
@@ -17,7 +17,9 @@ export default async function handler(req: RunRequest,res: RunResponse) {
 
     try {
         // runs file and returns status of exit and output of function
-        const [ status, output, error ] = await fileRun(language, code, inputs.split("\n"));
+        const inputArray = inputs ? inputs.split("\n") : [];
+
+        const [ status, output, error ] = await fileRun(language, code, inputArray);
 
         // invalid language was sent to runFile
         if (status === -2 ) {
