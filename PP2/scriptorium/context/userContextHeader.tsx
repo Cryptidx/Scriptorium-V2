@@ -47,7 +47,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error("Error fetching user info:", error);
       setUser(null); // If user info cannot be fetched, set to null
-    logout();
     }
   };
 
@@ -62,6 +61,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Automatically fetch user info on initial load
   useEffect(() => {
     refreshUser();
+    console.log(user);
   }, []);
 
   return (

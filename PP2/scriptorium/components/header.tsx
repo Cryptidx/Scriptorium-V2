@@ -15,11 +15,6 @@ import { DropdownItem } from '../types/dropdown.d';
 
 
 
-interface DropdownItem {
-  label: string;
-  link: string;
-}
-
 // const userItems: DropdownItem[] = [
 //   { label: "Profile", link: "/home" },
 //   { label: "Settings", link: "/settings" },
@@ -94,7 +89,7 @@ const visitorItems: DropdownItem[] = [
             <PageDropDown
               id="profileDropdown"
               trigger={<img src={user.avatar} className="object-scale-down h-10 w-10 rounded-full" alt="Profile" />}
-              items={userItems}
+              items={visitorItems}
             />
           )}        
 
