@@ -5,11 +5,21 @@ interface BlogPreviewProps {
   description: string;
   author: string;
   tags: string[];
+  language?: string;
 }
 
-const BlogPreview: React.FC<BlogPreviewProps> = ({ title, description, author, tags }) => {
+const BlogPreview: React.FC<BlogPreviewProps> = ({ title, description, author, tags,language }) => {
   return (
-    <button className="p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow bg-gray-50">
+    <button className="relative p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow bg-gray-50">
+      {language && (
+        <div className="flex flex-row justify-end ">
+            <div className="w-[25%] bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-md shadow-sm">
+          <p> {language}</p>
+        </div>
+        </div>
+       
+        
+      )}
       <h3 className="text-xl font-bold">{title}</h3>
       <p className="text-gray-700 mt-2">{description}</p>
       <div className="text-sm text-gray-500 mt-4">

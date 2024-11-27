@@ -136,7 +136,7 @@ const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }
     
   
 
-    const login = user!=null;
+    const login = true;
 
     const handleLogout = () => {
         setUser(null);
@@ -189,14 +189,14 @@ const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }
           trigger={<img src="/icons/menu.png" className="object-scale-down h-10 w-10" />}
           items={[
             { label: "Home", link: "/home" },
-            { label: "Code", link: "/codeEditor" },
+            { label: "Code", link: "/editor" },
           ]}
         />
 
 <PageDropDown
           id="profiledropdown"
           trigger={<img src="/avatar_images/pfp1.png" className="object-scale-down h-10 w-10 rounded-full" />}
-          items= {visitorItems}
+          items= {login ? userItems : visitorItems}
         />
 
         

@@ -136,7 +136,7 @@ const handleAddComment = async (): Promise<number> => {
 const BlogPageMain = () => {
     return (
       <div className="h-screen flex flex-col ">
-        <DropdownProvider>
+  
         <Header />
         <div className="flex flex-col content-center mt-5 space-y-1">
         <div className="flex justify-center ">
@@ -231,7 +231,7 @@ const BlogPageMain = () => {
         </div>
        
 
-        </DropdownProvider>
+    
 
        
 

@@ -6,6 +6,10 @@ import Layout from "@/components/layout";
 import BlogPage from "./blog-page";
 import Dropdown from "@/components/drop-downs/dropDown";
 import { DropdownProvider } from "@/components/drop-downs/dropdownContext";
+import CommentPage from "./comment-page";
+import TemplatePage from "./template-page";
+import { useDropdownContext } from "@/components/drop-downs/dropdownContext";
+import { DropdownItem } from "@/types/dropdown";
 
 // should work for visitor and user
 // home is basically blogs
@@ -13,10 +17,33 @@ const HomePage = () => {
     const { user } = useUser();
 
     const login = user != null;
+
+    const { dropdownStates } = useDropdownContext();
+
+    const sortDropdownState = dropdownStates.find(
+      (state) => state.id === "sort"
+    );
+    
+    const blogDropdownState = dropdownStates.find(
+      (state) => state.id === "blogDropdown"
+    );
+
+    const renderContent = () => {
+      switch (blogDropdownState?.selectedLabel) {
+        case "Blogs":
+          return <BlogPage />;
+        case "Comments":
+          return <CommentPage />;
+        case "Templates":
+          return <TemplatePage />;
+        default:
+          return <BlogPage />; // Default to BlogPage if nothing is selected
+      }
+    };
     
     return (
     <div className="h-screen flex flex-col">
-        <DropdownProvider>
+  
         <Header showSearchBar={true}/>
         <div className="flex flex-row px-16 py-3 space-x-5 font-mono text-sm font-bold text-gray-500">
 
@@ -54,15 +81,21 @@ const HomePage = () => {
           trigger={  
             <button className="px-4 py-2 rounded-full hover:bg-blue-200 transition ">Sort by <span className="inline-block -translate-y-0.5">⌄</span></button>
           }
-          items={[
-            { label: "Juciest", link: "/home" },
-          ]}
+          items={
+            blogDropdownState?.selectedLabel !== "Templates"
+              ? [{ label: "Juciest", link: "/home" }]
+              : [] // No items when "Templates" is selected
+          }
         />
-   
-        
+  
         </div>
+        
 
-        <BlogPage></BlogPage>
+        {/* <BlogPage></BlogPage> */}
+        {/* <CommentPage></CommentPage> */}
+        {/* <TemplatePage></TemplatePage> */}
+
+        {renderContent()}
         
         {/* <div className="flex-auto flex items-center justify-center -my-[2.5%]">
             
@@ -77,7 +110,6 @@ const HomePage = () => {
                 
             </div>
         </div> */}
-        </DropdownProvider>
         
         {/* <PageDropDown items={[
         { label: "Home", link: "/home" },

@@ -90,8 +90,29 @@ import Dropdown from "@/components/drop-downs/dropDown";
 import PageDropDown from "./drop-downs/pages-dropdown";
 import { DropdownProvider } from "./drop-downs/dropdownContext";
 import { useDropdownContext } from "./drop-downs/dropdownContext";
+import { DropdownItem } from "@/types/dropdown";
 
 const SearchBar = () => {
+
+  
+
+  const blogItems: DropdownItem[] = [
+    { label: "Title", link: "/home" },
+    { label: "Tags", link: "/home" },
+    { label: "Content",link: "/home" },
+    { label: "Template",link: "/home" },
+  ];
+
+  const commentItems: DropdownItem[] = [
+    { label: "Content",link: "/home" },
+  ];
+
+  const templateItems: DropdownItem[] = [
+    { label: "Title", link: "/home" },
+    { label: "Tags", link: "/home" },
+  ];
+
+  let itemsView: DropdownItem[] = blogItems;
 
   const { dropdownStates } = useDropdownContext();
 
@@ -105,19 +126,31 @@ const SearchBar = () => {
   let placeholder = "Search Scriptorium by ...";
 
   if (blogDropdownState?.selectedLabel === "Blogs") {
+    itemsView = blogItems;
     if (searchDropdownState?.selectedLabel === "Title" || searchDropdownState?.selectedLabel === "Content") {
       placeholder = "Search blogs by title or content";
     } else if (searchDropdownState?.selectedLabel === "Tags") {
-      placeholder = "Search blogs by tags";
+      placeholder = "Search blogs by tags, comma-separated";
     }
     else if(searchDropdownState?.selectedLabel === "Template"){
       placeholder = "Search blogs by template title";
     }
-    
-  } else if (blogDropdownState?.selectedLabel === "Comments") {
+  } 
+  
+  else if (blogDropdownState?.selectedLabel === "Comments") {
+    itemsView = commentItems;
     placeholder = "Search comments by content";
-  } else if (blogDropdownState?.selectedLabel === "Templates") {
-    placeholder = "Search templates by title";
+  } 
+  
+  else if (blogDropdownState?.selectedLabel === "Templates") {
+    itemsView = templateItems;
+    if (searchDropdownState?.selectedLabel === "Tags") {
+      placeholder = "Search templates by tags, comma-separated";
+    }
+
+    else if (searchDropdownState?.selectedLabel === "Title") {
+      placeholder = "Search templates by title";
+    }
   }
 
   return (
@@ -129,12 +162,6 @@ const SearchBar = () => {
         className="absolute left-4 h-6 w-6"
       />
 
-        {/* search scriptorium should change based on search by fields 
-        search for a blog title 
-        search by tags comma separated 
-        search by template title 
-        search by content */}
-      {/* Input Field */}
       <input
         type="text"
         placeholder={placeholder}
@@ -155,14 +182,8 @@ const SearchBar = () => {
             Search by <span className="inline-block -translate-y-0.5">⌄</span>
             </button>
           }
-          items={[
-            { label: "Title", link: "/home" },
-            { label: "Tags", link: "/home" },
-            { label: "Content",link: "/home" },
-          ]}
+          items={itemsView}
         />
-       
-      
       </div>
     </div>
   );

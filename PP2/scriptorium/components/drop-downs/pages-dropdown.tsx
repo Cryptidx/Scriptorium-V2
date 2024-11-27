@@ -443,7 +443,7 @@ interface DropdownItem {
 interface PageDropDownProps {
   id: string; // Unique identifier for the dropdown
   trigger: React.ReactNode | string; // Trigger element or default text for the dropdown
-  items: DropdownItem[]; // List of items with labels and links
+  items?: DropdownItem[]; // List of items with labels and links
   updateTriggerText?: boolean; // Optional param to update trigger text
 }
 
@@ -485,7 +485,7 @@ const PageDropDown: React.FC<PageDropDownProps> = ({
       </div>
 
       {/* Dropdown Menu */}
-      {isOpen && (
+      {isOpen && items && (
         <div className="flex flex-col bg-gray-50 text-sm w-24 rounded-lg shadow-xl border-2 border-gray-100 z-50 absolute mt-12 text-black font-sans font-normal">
           {items.map((item, index) => (
             <div
