@@ -30,6 +30,8 @@ export interface BlogSortingRequest extends NextApiRequest {
       page?: string; // Optional page number
       limit?: string; // Optional limit per page
       id?: string; // Blog ID for filtering comments
+      getLevel0?: string; // Optional flag to get all comments
+      commentid?: string; // Optional parent comment ID
     };
   }
   

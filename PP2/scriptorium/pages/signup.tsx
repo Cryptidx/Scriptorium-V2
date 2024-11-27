@@ -1,103 +1,189 @@
-
 import Header from "@/components/header";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import { DropdownProvider } from "@/components/drop-downs/dropdownContext";
 
-const SignupPage = () => {
-    const router = useRouter();
+const SignupPage: React.FC = () => {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+    confirmPassword: "",
+    avatar: "",
+  });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        // Perform custom validation or data processing here if needed
-        router.push("/avatar-selection"); // Redirect programmatically
-    };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    return (
-        <div className="h-screen flex flex-col">
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage(null);
 
-            <DropdownProvider>
-            <Header />
-            <div className="flex-1 flex items-center justify-center py-10">
-                <div className="flex flex-col items-start justify-start bg-white w-[90%] h-[90%] shadow-lg px-10 py-7 rounded-lg">
-                    <h4 className="text-center text-xl font-mono pb-3">
-                        Create a <i>shiny new</i> Scriptorium account
-                    </h4>
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
 
-                    {/* Form Element */}
-                    <form className="w-full flex flex-col" onSubmit={handleSubmit}>
-                        <div className="w-[50%] flex flex-row space-x-5">
-                            <input
-                                type="text"
-                                id="firstName"
-                                name="firstName"
-                                placeholder="First name"
-                                className="w-[50%] p-2 border border-gray-300 rounded-md"
-                                required
-                            />
-                            <input
-                                type="text"
-                                id="lastName"
-                                name="lastName"
-                                placeholder="Last name"
-                                className="w-[50%] p-2 border border-gray-300 rounded-md"
-                                required
-                            />
-                        </div>
+    try {
+      // Signup API Call
+      const signupResponse = await fetch("/api/users/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-                        <div className="py-10 w-[50%]">
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                placeholder="Email"
-                                className="p-2 w-full border border-gray-300 rounded-md"
-                                required
-                            />
-                        </div>
+      const signupData = await signupResponse.json();
 
-                        <div className="w-[50%] flex flex-row space-x-5">
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                placeholder="Password"
-                                className="w-[50%] p-2 border border-gray-300 rounded-md"
-                                required
-                            />
-                            <input
-                                type="password"
-                                id="repeatPassword"
-                                name="repeatPassword"
-                                placeholder="Repeat Password"
-                                className="w-[50%] p-2 border border-gray-300 rounded-md"
-                                required
-                            />
-                        </div>
+      if (!signupResponse.ok) {
+        setErrorMessage(signupData.error || "Signup failed. Please try again.");
+        return;
+      }
 
-                        <div className="py-10 w-[50%]">
-                            <input
-                                type="tel"
-                                id="phoneNumber"
-                                name="phoneNumber"
-                                placeholder="Phone Number"
-                                className="w-[49%] p-2 border border-gray-300 rounded-md"
-                                required
-                            />
-                        </div>
+      console.log("Signup successful:", signupData.user);
 
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            className="w-[30%] bg-[#132D5F] text-white p-2 rounded-md mt-4 hover:bg-[#0f2440] transition"
-                        >
-                            Next
-                        </button>
-                    </form>
-                </div>
+      // Auto Login After Successful Signup
+      const loginResponse = await fetch("/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (!loginResponse.ok) {
+        setErrorMessage(loginData.error || "Auto login failed. Please log in manually.");
+        return;
+      }
+
+      // Extract tokens and user data
+      const { accessToken, refreshToken } = loginData;
+
+      // Store tokens in local storage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      // Redirect user to avatar selection or another page
+      router.push("/avatar-selection");
+    } catch (error) {
+      console.error("Error during signup:", error);
+      setErrorMessage("An unexpected error occurred. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="h-screen flex flex-col">
+      <Header />
+      <div className="flex-1 flex items-center justify-center py-10">
+        <div className="flex flex-col items-start justify-start bg-white w-[90%] h-[90%] shadow-lg px-10 py-7 rounded-lg">
+          <h4 className="text-center text-xl font-mono pb-3">
+            Create a <i>shiny new</i> Scriptorium account
+          </h4>
+
+          {/* Signup Form */}
+          <form className="w-full flex flex-col" onSubmit={handleSignup}>
+            <div className="w-[50%] flex flex-row space-x-5">
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                placeholder="First name"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-[50%] p-2 border border-gray-300 rounded-md"
+                required
+              />
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                placeholder="Last name"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-[50%] p-2 border border-gray-300 rounded-md"
+                required
+              />
             </div>
-            </DropdownProvider>
+
+            <div className="py-10 w-[50%]">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="p-2 w-full border border-gray-300 rounded-md"
+                required
+              />
+            </div>
+
+            <div className="w-[50%] flex flex-row space-x-5">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-[50%] p-2 border border-gray-300 rounded-md"
+                required
+              />
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Repeat Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="w-[50%] p-2 border border-gray-300 rounded-md"
+                required
+              />
+            </div>
+
+            <div className="py-10 w-[50%]">
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                placeholder="Phone Number"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="w-[49%] p-2 border border-gray-300 rounded-md"
+                required
+              />
+            </div>
+
+            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-[30%] bg-[#132D5F] text-white p-2 rounded-md mt-4 hover:bg-[#0f2440] transition"
+            >
+              {loading ? "Signing up..." : "Next"}
+            </button>
+          </form>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default SignupPage;
