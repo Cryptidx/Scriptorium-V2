@@ -40,7 +40,7 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
         <div className="w-60">
           <Select
             options={languageOptions}
-            defaultValue={languageOptions.find((opt) => opt.value === language)}
+            value={languageOptions.find((opt) => opt.value === language)}
             onChange={(selected) =>
               onLanguageChange(selected?.value || "javascript")
             }
