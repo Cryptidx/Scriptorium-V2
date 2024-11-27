@@ -15,7 +15,7 @@ const SignupPage = () => {
     return (
         <div className="h-screen flex flex-col">
 
-            {/* <DropdownProvider> */}
+            <DropdownProvider>
             <Header />
             <div className="flex-1 flex items-center justify-center py-10">
                 <div className="flex flex-col items-start justify-start bg-white w-[90%] h-[90%] shadow-lg px-10 py-7 rounded-lg">
@@ -95,7 +95,7 @@ const SignupPage = () => {
                     </form>
                 </div>
             </div>
-            {/* </DropdownProvider> */}
+            </DropdownProvider>
         </div>
     );
 };
