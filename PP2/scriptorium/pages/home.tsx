@@ -82,7 +82,7 @@ const HomePage = () => {
           items={
             blogDropdownState?.selectedLabel !== "Templates"
               ? [{ label: "Juciest", link: "/home" }]
-              : [] // No items when "Templates" is selected
+              : null // No items when "Templates" is selected
           }
         />
   

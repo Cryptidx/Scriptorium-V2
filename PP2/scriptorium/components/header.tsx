@@ -36,11 +36,11 @@ interface DropdownItem {
   link: string;
 }
 
-const userItems: DropdownItem[] = [
-  { label: "Profile", link: "/home" },
-  { label: "Settings", link: "/settings" },
-  { label: "Logout", link: "/" },
-];
+// const userItems: DropdownItem[] = [
+//   { label: "Profile", link: "/home" },
+//   { label: "Settings", link: "/settings" },
+//   { label: "Logout", link: "/" },
+// ];
 
 const visitorItems: DropdownItem[] = [
   { label: "Settings", link: "/settings" },

@@ -10,6 +10,7 @@ interface BlogPreviewProps {
 
 const BlogPreview: React.FC<BlogPreviewProps> = ({ title, description, author, tags,language }) => {
   return (
+    // comment 
     <button className="relative p-4 border border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow bg-gray-50">
       {language && (
         <div className="flex flex-row justify-end ">
