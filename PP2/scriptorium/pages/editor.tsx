@@ -56,7 +56,7 @@ const Editor: React.FC = () => {
               onRun={handleRun}
               onSave={() => console.log("Save logic goes here")}
               onLanguageChange={handleLanguageChange}
-              showForkButton
+              showForkButton={false}
             />
             </div>
 
@@ -64,29 +64,23 @@ const Editor: React.FC = () => {
     
             {/* Right Side: Output and Template Info */}
             
-            <div className="flex-[0.8] flex flex-col space-y-6 overflow-auto mt-4 lg:mt-0 lg:ml-4">
               {/* Input Section */}
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="user-input" className="text-lg font-medium">
-                  Input:
-                </label>
-                <input
-                  id="user-input"
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  className="p-2 border border-gray-300 dark:border-gray-700 rounded-md"
-                  placeholder="Enter your input here"
-                />
-              </div>
+              <div className="flex-[0.8] flex flex-col space-y-6 overflow-auto mt-4 lg:mt-0 lg:ml-4">
+                <textarea
+                    id="user-input"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg w-full resize-none overflow-auto h-[150px]"
+                    placeholder="Enter your input here"
+                  ></textarea>
+
               {/* Output Section */}
               <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2">
-                <OutputComponent output={dummyOutput} />
+                <OutputComponent stderr={dummyOutput} stdout={dummyOutput} />
               </div>
-    
+              </div>
               
             </div>
-          </div>
         </div>
       </div>
     </div>

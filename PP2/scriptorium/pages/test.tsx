@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import BlogCreationModal from "@/components/modals/BlogCreationModal";
 import ReportCreationModal from "@/components/modals/ReportCreationModal";
 import TemplateCreationModal from "@/components/modals/TemplateCreationModal";
+import TemplateSelectionModal from "@/components/modals/BlogTemplateModal";
 
 const TestPage: React.FC = () => {
   const [showBlogModal, setShowBlogModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showBlogTemplateModal, setShowBlogTemplateModal] = useState(false);
 
   const handleBlogSubmit = (data: { title: string; description: string; tags: string[] }) => {
     console.log("Blog Data Submitted:", data);
@@ -27,6 +29,12 @@ const TestPage: React.FC = () => {
   }) => {
     console.log("Template Data Submitted:", data);
   };
+
+  const handleTemplateBlog = (selectedTemplate: any) => {
+    console.log("Selected Template:", selectedTemplate);
+    setShowBlogTemplateModal(false);
+  };
+
 
   return (
     <div className="h-screen flex flex-col items-center justify-center bg-gray-100">
@@ -50,6 +58,12 @@ const TestPage: React.FC = () => {
         >
           Open Template Modal
         </button>
+        <button
+        onClick={() => setShowBlogTemplateModal(true)}
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+      >
+        Open Blog Template Modal
+      </button>
       </div>
 
       {/* Blog Modal */}
@@ -72,6 +86,12 @@ const TestPage: React.FC = () => {
         isOpen={showTemplateModal}
         onClose={() => setShowTemplateModal(false)}
         onSubmit={handleTemplateSubmit}
+      />
+
+    <TemplateSelectionModal
+        isOpen={showBlogTemplateModal}
+        onClose={() => setShowBlogTemplateModal(false)}
+        onSubmit={handleTemplateBlog}
       />
     </div>
   );
