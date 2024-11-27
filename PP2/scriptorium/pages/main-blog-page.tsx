@@ -2,6 +2,12 @@ import React from "react";
 import NestedComments from "./nested-comments";
 import Header from "@/components/header";
 import PageDropDown from "@/components/drop-downs/pages-dropdown";
+import { ThumbsUp, ThumbsDown, ThumbsUpF, ThumbsDownF, Flag} from "@/common/icons";
+import VoteButton from "@/components/vote-button";
+import CommentButton from "@/components/comment-button";
+import { DropdownProvider } from "@/components/drop-downs/dropdownContext";
+
+
 interface CommentProps {
     id: string;
     description: string;
@@ -116,13 +122,22 @@ const comments: CommentProps[] = [
 //   };
   
 //   export default BlogPageMain;
+const handleAddComment = async (): Promise<number> => {
+    // Simulate an API call to add a comment and fetch the updated count
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(5); // Simulate the new comment count
+      }, 5);
+    });
+  };
   
+
 
 const BlogPageMain = () => {
     return (
       <div className="h-screen flex flex-col ">
-        <Header showSearchBar={true}/>
-
+        <DropdownProvider>
+        <Header />
         <div className="flex flex-col content-center mt-5 space-y-1">
         <div className="flex justify-center ">
         <h1 className="text-3xl font-bold">This is a Title </h1>
@@ -145,7 +160,7 @@ const BlogPageMain = () => {
         </div>
         
         <div className="flex-1 flex items-center justify-center py-4">
-        <div className="flex flex-col items-start justify-start bg-white w-[100%] h-[100%] shadow-lg px-10 py-7 ">
+        <div className="flex flex-col items-start justify-start bg-white w-[95%] h-[95%] shadow-lg px-10 pt-10 pb-[25%] ">
         Hello
 
         </div>
@@ -153,12 +168,49 @@ const BlogPageMain = () => {
       
         </div>
 
-        <div className="flex-1 flex items-start justify-start py-4">
-        <div className="flex flex-col items-start justify-start px-10">
+        <div className=" flex-1 flex items-start justify-start py-4">
+        <div className="flex flex-col items-start justify-start px-10 ">
         
-     
-   
+        <div className="flex flex-inline space-x-5 mb-4">
+        <div>
+        <VoteButton
+        upvoteIcon={<ThumbsUp className=" object-scale-down h-5 w-5" />}
+        upvoteActiveIcon={<ThumbsUpF className=" object-scale-down h-5 w-5" />}
+        downvoteIcon={<ThumbsDown className="object-scale-down h-5 w-5" /> }
+        downvoteActiveIcon={<ThumbsDownF className="object-scale-down h-5 w-5" />}
+
+        // from backend this will be for the number of votes within the blog
+        initialText="0"
+        changeText="1"
+      />
+        </div>
+       
+
+        <div>
+        <CommentButton initialCount={4} onAddComment={handleAddComment} />
+        </div>
+
+        <div className=" inline-flex items-center  bg-gray-200 rounded-full shadow-sm border-gray-500 border-2 pr-2 pl-2">
+            <button className="text-xs font-bold"><Flag className=" object-scale-down h-5 w-5" /></button>
+        </div>
+        </div>
+
+       
+        
+        
+
+        
+        </div>
+
+        
+        </div>
+        <hr className="w-[95%] border-t-2 border-gray-300 my-4 mx-auto"></hr>
+        <div className="flex flex-col items-start px-10 space-y-4">
+        
+
+        
         <PageDropDown
+            id="juicy"
           trigger={  
             <button className="px-4 py-2 text-sm rounded-full hover:bg-blue-200 transition ">Sort by <span className="inline-block -translate-y-0.5">⌄</span></button>
           }
@@ -166,17 +218,24 @@ const BlogPageMain = () => {
             { label: "Juciest", link: "/home" },
           ]}
         />
+        
+        
 
           
         
-        <h2 className="mt-8 text-xl font-semibold">Comment Section</h2>
-       
-
+        <h2 className="mt-8 text-md font-semibold">Comment Section</h2>
+        
+      
         {/* Pass `comments` to `NestedComments` without needing to specify `parentId` */}
         <NestedComments comments={comments} />
         </div>
-        </div>
+       
 
+        </DropdownProvider>
+
+       
+
+        
        
 
         
