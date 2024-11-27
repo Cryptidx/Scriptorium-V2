@@ -70,12 +70,14 @@
 
 // export default Header;
 
-import React from "react";
+import React, { useState } from "react";
 import Link from 'next/link';
 import { useUser } from "@/context/userContext";
 import { useTheme } from "@/context/modeContext";
 import { useRouter } from "next/router";
 import SearchBar from "./searchBar";
+import PageDropDown from "@/components/drop-downs/pages-dropdown";
+import Dropdown from "@/components/drop-downs/dropDown";
 
 // Declare the type inline for the icons
 type IconProps = React.FC<React.SVGProps<SVGSVGElement>>;
@@ -100,10 +102,38 @@ const MoonIcon: IconProps = (props) => (
   </svg>
 );
 
+interface DropdownItem {
+  label: string;
+  link: string;
+}
+
+const userItems: DropdownItem[] = [
+  { label: "Profile", link: "/home" },
+  { label: "Settings", link: "/settings" },
+  { label: "Logout", link: "/" },
+];
+
+const visitorItems: DropdownItem[] = [
+  { label: "Settings", link: "/settings" },
+];
+
+// const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // Tracks which dropdown is open
+
+// const handleDropdownToggle = (dropdownName: string) => {
+//   setActiveDropdown((prev) => (prev === dropdownName ? null : dropdownName));
+// };
+
+
+
+
+
 const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }) => {
     const { user, setUser } = useUser();
     const { theme, toggleTheme } = useTheme();
     const router = useRouter();
+
+    
+  
 
     const login = user!=null;
 
@@ -133,10 +163,35 @@ const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }
             {/* Search Bar */}
             {showSearchBar && <SearchBar />}
 
+            
+
             {/* Navigation */}
             <nav className="flex items-center space-x-5">
-                <Link href="/home">Home</Link>
-                <Link href="/codeEditor">Code</Link>
+                {/* <Link href="/home">Home</Link>
+                <Link href="/codeEditor">Code</Link> */}
+                {/* <PageDropDown 
+                src="/icons/menu.png"
+                
+                items={[
+        { label: "Home", link: "/home" },
+        { label: "Code", link: "/codeEditor" },
+        { label: "Templates", link: "/templates" }
+        ]} 
+        isProfile="0"/> */}
+        <PageDropDown
+          trigger={<img src="/icons/menu.png" className="object-scale-down h-10 w-10" />}
+          items={[
+            { label: "Home", link: "/home" },
+            { label: "Code", link: "/codeEditor" },
+          ]}
+        />
+
+        <PageDropDown
+          trigger={<img src="/avatar_images/pfp1.png" className="object-scale-down h-10 w-10 rounded-full" />}
+          items= {visitorItems}
+        />
+
+                
 
                 {/* Dynamic Button */}
                 {login ? (
