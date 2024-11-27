@@ -26,6 +26,9 @@ export default async function handlerSorting(req: SortingCommentsRequest, res: S
     const blogId = req.query.id ? parseInt(req.query.id, 10) : null;
     console.log(blogId);
 
+    const commentId = req.query.commentid ? parseInt(req.query.commentid, 10) : null;
+
+
     // Convert page and limit to integers and calculate skip
     const pageInt = page;
     const limitInt = limit;
@@ -79,8 +82,18 @@ export default async function handlerSorting(req: SortingCommentsRequest, res: S
                 parentId: null,
             });
         }
-          
 
+        if(which === 3) {
+            if (!blogId || isNaN(blogId) ||!commentId || isNaN(commentId)) {
+                return res.status(400).json({ error: "Invalid blog ID or comment parent ID" });
+            }
+            // Use type-safe addition to `filters.AND`
+            (filters.AND as Prisma.CommentWhereInput[]).push({
+                blogId: blogId,
+                parentId: commentId,
+            });
+        }
+          
         data = await prisma.comment.findMany({
             where: filters,
             orderBy: { upvotes: "desc" },
