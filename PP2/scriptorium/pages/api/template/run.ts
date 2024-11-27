@@ -1,16 +1,15 @@
-const { runFile } = require('../../../lib/code-run');
+const { fileRun } = require('../../../lib/code-run');
+import { RunRequest, RunResponse } from '@/types/run';
 
-// runs code sent by user
-// expects code and language
-export default async function handler(req, res) {
+export default async function handler(req: RunRequest,res: RunResponse) {
     // makes sure API call is a GET request
     if (req.method !== "GET") {
         return res.status(405).json({ error: "must use GET call"} );
     }
 
     // destructures body
-    const { language, code, inputs } = req.body;
-    
+    const { language, code, inputs } = req.body || {};
+
     // makes sure language and body paramebers are passed
     if (!language || !code) {
         return res.status(400).json({ error: "languge and code needed" });
@@ -18,7 +17,7 @@ export default async function handler(req, res) {
 
     try {
         // runs file and returns status of exit and output of function
-        const [ status, output, error ] = await runFile(language, code, inputs);
+        const [ status, output, error ] = await fileRun(language, code, inputs.split("\n"));
 
         // invalid language was sent to runFile
         if (status === -2 ) {
@@ -30,7 +29,7 @@ export default async function handler(req, res) {
             return res.status(200).json( { 
                 status: 'pass',
                 output: output,
-                error: error                        
+                error: error
             });
         } else { // file ran and experienced an error
             return res.status(400).json( {
@@ -42,7 +41,7 @@ export default async function handler(req, res) {
 
     } catch (error) {
         // general catch error
-        console.error(error.message);
+        console.error(error);
         return res.status(422).json({ error: "could not execute file" });
     }
 }
