@@ -78,6 +78,7 @@ import { useRouter } from "next/router";
 import SearchBar from "./searchBar";
 import PageDropDown from "@/components/drop-downs/pages-dropdown";
 import Dropdown from "@/components/drop-downs/dropDown";
+import { DropdownProvider } from "./drop-downs/dropdownContext";
 
 // Declare the type inline for the icons
 type IconProps = React.FC<React.SVGProps<SVGSVGElement>>;
@@ -178,7 +179,13 @@ const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }
         { label: "Templates", link: "/templates" }
         ]} 
         isProfile="0"/> */}
+
+        {/* <DropdownProvider>
+        
+        </DropdownProvider>
+         */}
         <PageDropDown
+        id="burgerDropdown"
           trigger={<img src="/icons/menu.png" className="object-scale-down h-10 w-10" />}
           items={[
             { label: "Home", link: "/home" },
@@ -186,11 +193,13 @@ const Header: React.FC<{ showSearchBar?: boolean }> = ({ showSearchBar = false }
           ]}
         />
 
-        <PageDropDown
+<PageDropDown
+          id="profiledropdown"
           trigger={<img src="/avatar_images/pfp1.png" className="object-scale-down h-10 w-10 rounded-full" />}
           items= {visitorItems}
         />
 
+        
                 
 
                 {/* Dynamic Button */}
