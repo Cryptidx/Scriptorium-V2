@@ -61,6 +61,7 @@ async function handlerCreate(req: TemplateRequest,res: TemplateResponse){
         const template = await prisma.template.create({
             data: {
                 ownerId: author.id,
+                name: author.firstName + " " + author.lastName,
                 code,
                 language,
                 title,

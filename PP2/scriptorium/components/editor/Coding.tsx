@@ -12,6 +12,8 @@ interface CodeEditorProps {
   onFork?: () => void; // Optional Fork logic
   onLanguageChange: (language: string) => void; // Language selection
   showForkButton?: boolean; // Option to show Fork button
+  showSaveButton?: boolean; // Option to show Save button
+  editable?: boolean; // Option to make code un-editable
   title?: string; // Optional title
   languageOptions?: { value: string; label: string }[]; // Optional custom language list
 }
@@ -25,6 +27,8 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
   onFork,
   onLanguageChange,
   showForkButton = false,
+  showSaveButton = false,
+  editable = true,
   title,
   languageOptions = languageList, // Default to languageList
 }) => {
@@ -68,12 +72,12 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
           >
             Run
           </button>
-          <button
+          {showSaveButton && <button
             onClick={onSave}
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
             Save
-          </button>
+          </button>}
           {showForkButton && (
             <button
               onClick={onFork}
@@ -96,6 +100,7 @@ const CodeEditorComponent: React.FC<CodeEditorProps> = ({
           options={{
             minimap: { enabled: true },
             scrollBeyondLastLine: false,
+            readOnly: !editable
           }}
         />
       </div>

@@ -1,43 +1,109 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CodeEditorComponent from "@/components/editor/Coding";
 import OutputComponent from "@/components/editor/Output";
 import TemplateInfo from "@/components/editor/TemplateInfo"; 
 import Header from "@/components/header";
 
+import { Template, Tag } from "@/types/template";
+import { defaultLocalStorage } from "@/utils/default";
 
-const Template: React.FC = () => {
+interface TempApi {
+  message: string;
+  template: Template;
+}
+
+const TemplateEditor: React.FC = () => {
   const [output, setOutput] = useState("");
+  const [error, setError] = useState("");
   const [code, setCode] = useState("// Start coding here!"); // Maintain the current code
+  const [title, setTitle] = useState("Code Editor")
   const [language, setLanguage] = useState("javascript");
   const [inputValue, setInputValue] = useState(""); // State for user input
+  const [id, setId] = useState(-1);
+  const [tags, setTags] = useState<string[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [fork, setFork] = useState("");
+  const [authorId, setAuthorId] = useState(-1);
+  const [authorName, setAuthorName] = useState("");
 
+  useEffect(() => {
+    defaultLocalStorage();
+    localStorage.setItem("templateId", "-1");
+    setId(Number(localStorage.getItem("templateId")));
+  }, []);
 
-  const dummyOutput = "This is a sample output fr\n\n\n\n\naaaa\na\na\na\nana\na\na\na\na\na\na\na\na\naom ";
+  useEffect(() => {
+    if (id === -1) {
+      return;
+    }
 
-  const stdout = "This is the standard output.\nHello, world!";
-  const stderr =dummyOutput;
+    fetch("api/template/" + id, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      if (!response.ok){
+        return;
+      }
+      return response.json();
+    }).then((data: TempApi) => {
+      if (!data || !data.template) {
+        return;
+      }
 
-  const dummyAuthor = "John Doe";
-  const dummyForked = "Original Template";
-  const dummyTags = ["JavaScript", "React", "CSS"];
-  const dummyBlogs = [
-    { title: "Blog Post 1", description: "Description of Blog Post 1" },
-    { title: "Blog Post 2", description: "Description of Blog Post 2" },
-    { title: "Blog Post 3", description: "Description of Blog Post 3" },
-    { title: "Blog Post 2", description: "Description of Blog Post 2" },
-    { title: "Blog Post 2", description: "Description of Blog Post 2" },
-    { title: "Blog Post 2", description: "Description of Blog Post 2" },
-    { title: "Blog Post 2", description: "Description of Blog Post 2" },
-  ];
-  const templateName = "My awesome template";
+      if (data.template.wasForked) {
+        fetch("api/template/" + data.template.forkedFromId, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((response) => {
+          if (!response.ok){
+            return;
+          }
+          return response.json();
+        }).then((data: TempApi) => {
+          if (!data || !data.template) {
+            return;
+          }
+          setFork(data.template.title);
+        });
+      }
+
+      setAuthorId(data.template.ownerId);
+      setAuthorName(data.template.name);
+      setTitle(data.template.title);
+      setCode(data.template.code);
+      setLanguage(data.template.language);
+      setTags(data.template.tags?.map((tag: Tag) => tag.name) || []);
+      setBlogs(data.template.blogs? data.template.blogs : []);
+    });
+  }, [id]);
 
   const handleRun = () => {
-    console.log("Running code with input:", inputValue);
-    console.log("Code to execute:", code);
+    let inputs = inputValue;
 
-    // Simulate code execution (replace this with actual logic/API call)
-    const simulatedOutput = `Executed ${language} code with input: "${inputValue}"`;
-    setOutput(simulatedOutput); // Set the output
+    if (!inputs.endsWith('\n')) {
+      inputs += '\n';
+    }
+
+    fetch("api/template/run", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ language, code, inputs }),
+    }).then((response) => {
+      return response.json();
+    }).then((data) => {
+      setOutput(data.output);
+      setError(data.error);
+    });
+
+    // // Simulate code execution (replace this with actual logic/API call)
+    // const simulatedOutput = `Executed ${language} code with input: "${inputValue}"`;
+    // setOutput(simulatedOutput); // Set the output
   };
   const handleSave = () => {
     console.log("Saving code:", code);
@@ -70,9 +136,11 @@ const Template: React.FC = () => {
                 onRun={handleRun}
                 onSave={handleSave}
                 onLanguageChange={handleLanguageChange}
-                showForkButton={true}
+                showForkButton={id !== -1}
+                showSaveButton={true}
+                editable={id === -1 || authorId === 1} // UPDATE TO PROPER AUTHORID AND USERID
                 onFork={handleSave}
-                title={templateName}
+                title={title}
               />
             </div>
     
@@ -90,22 +158,20 @@ const Template: React.FC = () => {
 
               {/* Output Section */}
               <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2">
-              <OutputComponent stdout={stdout} stderr={stderr} />
+              <OutputComponent stdout={output} stderr={error} />
               </div>
     
               {/* Template Info Section */}
-              <div
-                className={`mt-4 lg:mt-0 flex flex-col ${
-                  dummyOutput ? "flex-1" : "flex-[0.7]"
-                } border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}
+              {id !== -1 && <div
+                className={`mt-4 lg:mt-0 flex flex-col flex-[0.7] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}
               >
                 <TemplateInfo
-                  author={dummyAuthor}
-                  forked={dummyForked}
-                  tags={dummyTags}
-                  blogs={dummyBlogs}
+                  author={authorName}
+                  forked={fork}
+                  tags={tags}
+                  blogs={blogs}
                 />
-              </div>
+              </div>}
             </div>
           </div>
         </div>
@@ -114,4 +180,4 @@ const Template: React.FC = () => {
   );
 };  
 
-export default Template;
+export default TemplateEditor;
