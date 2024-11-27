@@ -93,13 +93,21 @@ export default async function handlerSorting(req: SortingCommentsRequest, res: S
                 parentId: commentId,
             });
         }
-          
+
         data = await prisma.comment.findMany({
             where: filters,
             orderBy: { upvotes: "desc" },
             skip: skip,
             take: limitInt,
-        });
+            include: {
+              _count: {
+                select: {
+                  subcomments: true, // Get the count of subcomments
+                },
+              },
+            },
+          });
+          
     
         if (authorId) {
             const flaggedCommentIds = data
@@ -111,8 +119,9 @@ export default async function handlerSorting(req: SortingCommentsRequest, res: S
             }
         }
 
-        data = data.map(comment => ({
+        data = data.map(({ _count, ...comment }) => ({
             ...comment,
+            subcommentsCount: _count.subcomments, // Extract subcomments count
             reports: comment.flagged && comment.authorId === authorId ? reportData[comment.id] || [] : undefined,
         }));
 
