@@ -88,8 +88,38 @@
 import React from "react";
 import Dropdown from "@/components/drop-downs/dropDown";
 import PageDropDown from "./drop-downs/pages-dropdown";
+import { DropdownProvider } from "./drop-downs/dropdownContext";
+import { useDropdownContext } from "./drop-downs/dropdownContext";
 
 const SearchBar = () => {
+
+  const { dropdownStates } = useDropdownContext();
+
+  const searchDropdownState = dropdownStates.find(
+    (state) => state.id === "searchdropdown"
+  );
+  const blogDropdownState = dropdownStates.find(
+    (state) => state.id === "blogDropdown"
+  );
+
+  let placeholder = "Search Scriptorium by ...";
+
+  if (blogDropdownState?.selectedLabel === "Blogs") {
+    if (searchDropdownState?.selectedLabel === "Title" || searchDropdownState?.selectedLabel === "Content") {
+      placeholder = "Search blogs by title or content";
+    } else if (searchDropdownState?.selectedLabel === "Tags") {
+      placeholder = "Search blogs by tags";
+    }
+    else if(searchDropdownState?.selectedLabel === "Template"){
+      placeholder = "Search blogs by template title";
+    }
+    
+  } else if (blogDropdownState?.selectedLabel === "Comments") {
+    placeholder = "Search comments by content";
+  } else if (blogDropdownState?.selectedLabel === "Templates") {
+    placeholder = "Search templates by title";
+  }
+
   return (
     <div className="relative flex items-center w-[50%] h-[50%] border border-gray-300 rounded-full">
       {/* Search Icon */}
@@ -107,7 +137,7 @@ const SearchBar = () => {
       {/* Input Field */}
       <input
         type="text"
-        placeholder="Search Scriptorium"
+        placeholder={placeholder}
         className="w-full  pl-12 pr-[110px] py-2 focus:outline-none text-black rounded-l-full"
       />
 
@@ -115,7 +145,10 @@ const SearchBar = () => {
 
       {/* "absolute text-sm right-0 px-4 py-2 bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-r-full h-full */}
       <div className="relative text-sm px-5 bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-r-full ">
+        
+     
         <PageDropDown
+            id="searchdropdown"
           trigger={
             
             <button>
@@ -124,10 +157,12 @@ const SearchBar = () => {
           }
           items={[
             { label: "Title", link: "/home" },
-            { label: "Tags", link: "/profile" },
-            { label: "Content",link: "/profile" },
+            { label: "Tags", link: "/home" },
+            { label: "Content",link: "/home" },
           ]}
         />
+       
+      
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@/context/userContext";
 import Link from "next/link";
+import { DropdownProvider } from "@/components/drop-downs/dropdownContext";
 
 const MainPage = () => {
   const [email, setemail] = useState("");
@@ -48,6 +49,7 @@ const MainPage = () => {
 
   return (
     <div className="h-screen flex flex-col">
+      <DropdownProvider>
       <Header />
       <div className="flex-1 flex items-center justify-center py-10">
         <div className="flex flex-col items-center justify-center bg-white w-[90%] h-[90%] shadow-lg px-10 rounded-lg">
@@ -105,6 +107,8 @@ const MainPage = () => {
 
         </div>
       </div>
+      </DropdownProvider>
+      
     </div>
   );
 };
