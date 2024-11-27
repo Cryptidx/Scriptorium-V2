@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import CodeEditorComponent from "@/components/editor/Coding";
 import OutputComponent from "@/components/editor/Output";
-import Header from "@/components/header";
 
 const Editor: React.FC = () => {
   const [code, setCode] = useState("// Start coding here!");
@@ -36,8 +35,6 @@ const Editor: React.FC = () => {
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900">
-      {/* Header */}
-      <Header />
   
       {/* Main Content */}
       <div className="flex items-center justify-center flex-1">

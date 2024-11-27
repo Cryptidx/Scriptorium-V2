@@ -1,6 +1,5 @@
 import React from "react";
 import NestedComments from "./nested-comments";
-import Header from "@/components/header";
 import PageDropDown from "@/components/drop-downs/pages-dropdown";
 import { ThumbsUp, ThumbsDown, ThumbsUpF, ThumbsDownF, Flag} from "@/common/icons";
 import VoteButton from "@/components/vote-button";
@@ -137,7 +136,6 @@ const BlogPageMain = () => {
     return (
       <div className="h-screen flex flex-col ">
   
-        <Header />
         <div className="flex flex-col content-center mt-5 space-y-1">
         <div className="flex justify-center ">
         <h1 className="text-3xl font-bold">This is a Title </h1>

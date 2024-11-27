@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import CodeEditorComponent from "@/components/editor/Coding";
 import OutputComponent from "@/components/editor/Output";
 import TemplateInfo from "@/components/editor/TemplateInfo"; 
-import Header from "@/components/header";
 
 import { Template, Tag } from "@/types/template";
 import { defaultLocalStorage } from "@/utils/default";
@@ -116,8 +115,6 @@ const TemplateEditor: React.FC = () => {
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900">
-      {/* Header */}
-      <Header />
   
       {/* Main Content */}
       <div className="flex items-center justify-center flex-1">

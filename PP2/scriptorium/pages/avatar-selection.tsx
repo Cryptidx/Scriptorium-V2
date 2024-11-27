@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Header from "@/components/header";
 import AvatarPanel from "@/components/avatarPanel";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { apiCall } from "@/utils/auth-api-w-refresh";
 import { defaultLocalStorage } from "@/utils/default";
+import { useUser } from "@/context/userContextHeader";
 
 const AvatarSelectionPage = () => {
+  const {refreshUser} = useUser();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,8 +51,9 @@ const AvatarSelectionPage = () => {
 
 
         if (!response.success) {
-            setError("Authentication failed. Redirecting...");
+          setError("Authentication failed. Redirecting...");
           localStorage.setItem("accessAvatarSelection", "false");
+
           router.push("/home");
           return;
         }
@@ -101,6 +103,7 @@ const AvatarSelectionPage = () => {
 
       if (response.message === 'User updated successfully'){
         setSuccessMessage("Avatar updated successfully!");
+        await refreshUser();
         // Redirect after a short delay
         setTimeout(() => router.push("/home"), 1500);
       } else {
@@ -113,10 +116,9 @@ const AvatarSelectionPage = () => {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex-1 flex items-center justify-center py-10">
         <div className="flex flex-col items-center justify-center bg-white w-[90%] h-[90%] shadow-lg px-10 rounded-lg">
           <h1 className="text-2xl font-bold mb-6">Select Your Avatar</h1>

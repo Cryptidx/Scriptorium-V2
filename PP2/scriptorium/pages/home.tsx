@@ -1,4 +1,3 @@
-import Header from "@/components/header";
 import { useUser } from "@/context/userContext";
 import SearchBar from "@/components/searchBar";
 import PageDropDown from "@/components/drop-downs/pages-dropdown";
@@ -44,7 +43,6 @@ const HomePage = () => {
     return (
     <div className="h-screen flex flex-col">
   
-        <Header showSearchBar={true}/>
         <div className="flex flex-row px-16 py-3 space-x-5 font-mono text-sm font-bold text-gray-500">
 
         {/* <Header showSearchBar={true}></Header> */}
