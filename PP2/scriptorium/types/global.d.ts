@@ -65,6 +65,7 @@ declare global {
   comments: Comment[]; // Comments on the blog
   upvotes: number;
   downvotes: number;
+  reports: string[];
   }
   interface Comment {
     id: number;
