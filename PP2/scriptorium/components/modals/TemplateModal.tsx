@@ -1,27 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { languageList } from "@/types/constants";
 import Editor from "@monaco-editor/react";
+import { apiCallText } from "@/utils/auth-api-w-refresh-text";
+
+interface TempApi {
+  message: string;
+  template: Template;
+}
 
 interface TemplateCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: {
+    id: string;
     language: string;
     title: string;
     code: string;
     explanation: string;
     tags: string[];
-    forkedFromId?: number | null;
   }) => void;
   defaultValues?: {
-    forkedFromId?: number | null;
+    forkedFromId?: string;
     code: string;
     language: string;
     title: string;
     explanation: string;
     tags: string[];
-  }; // Default values for updating
+  }
+  tempId: number | null;
+  forked: boolean;
 }
 
 const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
@@ -29,15 +37,38 @@ const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
   onClose,
   onSubmit,
   defaultValues,
+  tempId,
+  forked
 }) => {
+
+  const [oldCode, setOldCode] = useState("");
+  const [oldLanguage, setOldLanguage] = useState("");
+  const [oldTitle, setOldTitle] = useState("");
+  const [oldExplanation, setOldExplanation] = useState("");
+  const [oldTags, setOldTags] = useState([""]);
+
   const [formData, setFormData] = useState({
-    forkedFromId: defaultValues?.forkedFromId || null,
-    code: defaultValues?.code || "",
-    language: defaultValues?.language || "javascript",
-    title: defaultValues?.title || "",
-    explanation: defaultValues?.explanation || "",
-    tags: defaultValues?.tags || [""],
+    forkedFromId: "",
+    code: "",
+    language: "",
+    title: "",
+    explanation: "",
+    tags: [""],
   });
+
+  // Update formData when defaultValues changes
+  useEffect(() => {
+    setFormData({
+      forkedFromId: defaultValues?.forkedFromId || "",
+      code: defaultValues?.code || "",
+      language: defaultValues?.language || "javascript",
+      title: defaultValues?.title || "",
+      explanation: defaultValues?.explanation || "",
+      tags: defaultValues?.tags || [""]
+    });
+  }, [defaultValues]);
+
+
   const [error, setError] = useState<string>("");
 
   if (!isOpen) return null;
@@ -64,7 +95,10 @@ const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     }));
 
   const validateForm = () => {
-    if (!formData.title || !formData.language || !formData.code || !formData.explanation) {
+    if (!formData.title || !formData.language || !formData.code || !formData.explanation || formData.tags.length === 0) {
+      if (formData.tags.length === 0) {
+        alert("Please provide at least one tag");
+      }
       setError("All fields must be filled out.");
       return false;
     }
@@ -76,11 +110,82 @@ const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return; // Stop submission if validation fails
-    onSubmit(formData);
-    onClose();
+    if (!validateForm()) return;
+
+    const body: Record<string, any> = {};
+    
+    if (!forked && tempId !== -1) {
+      fetch(`/api/template/${tempId}`)
+      .then((response) => response.json())
+      .then((data: TempApi) => {
+        if (!data?.template) return;
+
+        setOldTitle(data.template.title);
+        setOldExplanation(data.template.explanation);
+        setOldCode(data.template.code);
+        setOldLanguage(data.template.language);
+        setOldTags(data.template.tags?.map((tag: Tag) => tag.name) || []);
+      })
+      .catch((error) => console.error("Error fetching template:", error));
+
+      try {
+        if (oldCode !== formData.code) body.code = formData.code;
+        if (oldLanguage !== formData.language) body.language = formData.language;
+        if (oldTitle !== formData.title) body.title = formData.title;
+        if (oldExplanation !== formData.explanation) body.explanation = formData.explanation;
+        if (oldTags !== formData.tags) body.tags = formData.tags;
+  
+        if (Object.keys(body).length === 0) {
+          alert("No changes detected. Nothing to update.");
+          return;
+        }
+  
+        const response = await apiCallText(`/api/template/${tempId}`, {method: "PUT",body: JSON.stringify(body)});
+        
+        console.log("Full response:", response);
+
+        onSubmit({id: String(tempId) || "",
+          code: formData.code,
+          language: formData.language,
+          title: formData.title,
+          explanation: formData.explanation,
+          tags: formData.tags})
+        onClose();
+        return;
+  
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      body.code = formData.code;
+      body.language = formData.language;
+      body.title = formData.title;
+      body.explanation = formData.explanation;
+      body.tags = formData.tags;
+
+      if (tempId !== -1) {
+        body.forkedFromId = tempId;
+      }
+
+      const response = await apiCallText(`/api/template`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      
+      const data = JSON.parse(response);
+
+      onSubmit({id: data.template.id,
+        code: formData.code,
+        language: formData.language,
+        title: formData.title,
+        explanation: formData.explanation,
+        tags: formData.tags});
+      onClose();
+      return;
+    }
   };
 
   const handleLanguageChange = (selected: { value: string; label: string } | null) => {

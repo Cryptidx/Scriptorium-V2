@@ -1,31 +1,65 @@
+import { apiCall } from "@/utils/auth-api-w-refresh";
 import React, { useState } from "react";
 
 interface ReportCreationModalProps {
-  title: string;
+  id: string;
+  type: string;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { explanation: string }) => void;
+  onSubmit: () => void;
 }
 
-const ReportCreationModal: React.FC<ReportCreationModalProps> = ({title, isOpen, onClose, onSubmit }) => {
+const ReportCreationModal: React.FC<ReportCreationModalProps> = ({id, type, isOpen, onClose, onSubmit }) => {
   const [explanation, setExplanation] = useState("");
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!explanation) {
       alert("Please provide an explanation.");
       return;
     }
-    onSubmit({ explanation });
-    onClose();
+
+    const body: Record<string, any> = {};
+
+    try{
+      body.contentId = Number(id);
+      body.contentType = type;
+      body.explanation = explanation;
+
+      const response = await apiCall(`/api/reports/report`, {method: "POST",body: JSON.stringify(body)});
+
+      //const data = await response.json();
+
+      alert("Report Sent");
+      setExplanation("");
+      //onSubmit(data.blog);
+      onClose();
+
+      // if (response.ok) {
+      //   alert("Report sent");
+      //   onSubmit(data.blog);
+      //   onClose();
+      // } else {
+      //   console.error("Error creating blog:", data.error);
+      // }
+
+    } catch (error) {
+        console.log(error);
+    }
+    
   };
+
+  function close() {
+    setExplanation("");
+    onClose();
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
     <div className="bg-white dark:bg-gray-800 w-[90%] max-w-md h-[70vh] p-6 rounded-lg shadow-lg overflow-y-auto">
-    <h2 className="text-lg font-bold">Create report on: {title} </h2>
+    <h2 className="text-lg font-bold">Create Report</h2>
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
           <div>
           <label
@@ -46,7 +80,7 @@ const ReportCreationModal: React.FC<ReportCreationModalProps> = ({title, isOpen,
           <div className="flex justify-end space-x-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={close}
               className="px-4 py-2 bg-gray-300 text-black rounded-lg"
             >
               Cancel
