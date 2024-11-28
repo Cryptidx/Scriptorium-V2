@@ -12,6 +12,7 @@ export interface Template {
     explanation: string;
     forkedFromId?: number | null;
     wasForked: boolean;
+    author: {firstName: string, lastName: string}
     createdAt: Date;
     updatedAt: Date;
     tags?: Tag[];
