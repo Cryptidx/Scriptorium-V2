@@ -174,7 +174,8 @@ const handleEditSubmit = async (data: { title: string; description: string; tags
           </div>
 
           <ReportCreationModal
-            title={reportTitle}
+            id={String(id)}
+            type={"BLOG"}
             isOpen={showReportModal}
             onClose={() => setShowReportModal(false)}
             onSubmit={handleReportSubmit}
