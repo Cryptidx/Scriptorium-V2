@@ -1195,7 +1195,7 @@ const CommentSection: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full pb-[20px] max-w-2xl mx-auto">
       <h2 className="text-xl font-bold mb-4">Comment Section</h2>
       <AddCommentInput onAddComment={handleAddComment} />
 
