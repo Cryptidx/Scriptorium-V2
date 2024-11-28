@@ -67,3 +67,93 @@ export   const fetchCurrentUser = async () => {
     await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate network delay
     return { id: "user123", name: "Jane Doe" }; // Simulated logged-in user
   };
+
+
+// export const simulateBlogCreationAPI = async (data: {
+//   title: string;
+//   description: string;
+//   tags: string[];
+// }) => {
+//   return new Promise<{ id: string; title: string; description: string; tags: string[] }>((resolve) => {
+//     setTimeout(() => {
+//       let newBlog =  {
+//         id: Math.random().toString(36).substring(2, 9), // Simulate a unique blog ID
+//         title: data.title,
+//         description: data.description,
+//         tags: data.tags,
+//       }
+
+//       localStorage.setItem(`${newBlog.id}`, JSON.stringify(newBlog));
+//       resolve(
+//         newBlog
+//       );
+//     }, 1000); // Simulate network delay
+//   });
+// };
+export const simulateBlogCreationAPI = async (data: {
+  title: string;
+  description: string;
+  tags: string[];
+}) => {
+  return new Promise<{ id: string; title: string; description: string; tags: string[] }>((resolve) => {
+    setTimeout(() => {
+      const newBlog = {
+        id: Math.random().toString(36).substring(2, 9), // Simulate a unique blog ID
+        title: data.title,
+        description: data.description,
+        tags: data.tags,
+        
+        // need a way to get the author for a blog
+        author: "Jane Doe",
+
+         // author id is from back end
+        authorId:"user123",
+      };
+
+      localStorage.setItem(newBlog.id, JSON.stringify(newBlog));
+      resolve(newBlog);
+    }, 1000); // Simulate network delay
+  });
+};
+
+// export const simulateBlogEditAPI = async (id: string, data: { title: string; description: string; tags: string[] }) => {
+//   return new Promise<{ id: string; title: string; description: string; tags: string[] }>((resolve) => {
+//     setTimeout(() => {
+//       const updatedBlog = {
+//         id,
+//         title: data.title,
+//         description: data.description,
+//         tags: data.tags,
+//       };
+//       localStorage.setItem(id, JSON.stringify(updatedBlog));
+//       resolve(updatedBlog);
+//     }, 1000); // Simulate a delay
+//   });
+// };
+export const simulateBlogEditAPI = async (
+  id: string,
+  data: { title: string; description: string; tags: string[] }
+) => {
+  return new Promise<{
+    id: string;
+    title: string;
+    description: string;
+    tags: string[];
+    author: string;
+    authorId: string;
+  }>((resolve) => {
+    setTimeout(() => {
+      const storedBlog = JSON.parse(localStorage.getItem(id) || "{}");
+      const updatedBlog = {
+        id,
+        title: data.title,
+        description: data.description,
+        tags: data.tags,
+        author: storedBlog.author || "Unknown Author", // Fallback in case `author` is missing
+        authorId: storedBlog.authorId || "unknownAuthorId", // Fallback in case `authorId` is missing
+      };
+      localStorage.setItem(id, JSON.stringify(updatedBlog));
+      resolve(updatedBlog);
+    }, 1000); // Simulate network delay
+  });
+};
