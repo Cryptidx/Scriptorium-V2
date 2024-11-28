@@ -66,7 +66,7 @@ const TemplateEditor: React.FC = () => {
       inputs += '\n';
     }
 
-    fetch("api/template/run", {
+    fetch("/api/template/run", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
