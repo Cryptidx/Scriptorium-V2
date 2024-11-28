@@ -56,7 +56,6 @@ docker build --no-cache -t runtime-java "$BASE_DIR/docker/java"
 docker build --no-cache -t runtime-javascript "$BASE_DIR/docker/javascript"
 docker build --no-cache -t runtime-perl "$BASE_DIR/docker/perl"
 docker build --no-cache -t runtime-python "$BASE_DIR/docker/python"
-docker build --no-cache -t runtime-r "$BASE_DIR/docker/r"
 docker build --no-cache -t runtime-ruby "$BASE_DIR/docker/ruby"
 docker build --no-cache -t runtime-rust "$BASE_DIR/docker/rust"
 docker build --no-cache -t runtime-swift "$BASE_DIR/docker/swift"
@@ -80,6 +79,6 @@ npx prisma migrate dev --name "$MIGRATION_NAME"
 
 # Step 5: Run the script to create the admin user
 echo "Creating an admin user..."
-node ./startup-stuff-temp/create-sys-admin.js
+node ./seed.js
 
 echo "Startup preparation complete."
