@@ -17,7 +17,7 @@ export default async function handler(req: ReportRequest, res: ReportResponse) {
         const { userId } = await authMiddleware(req, res);
         if (!userId) return; // authMiddleware already handled the response if unauthorized
   
-        return await handleReportSubmission(req, res);
+        return await handleReportSubmission(req, res, userId);
       }
   
       // For GET and PUT (admin actions), get the full user object
@@ -55,7 +55,7 @@ export default async function handler(req: ReportRequest, res: ReportResponse) {
   
 
 // Handler to allow users to create reports
-async function handleReportSubmission(req: ReportRequest, res: ReportResponse) {
+async function handleReportSubmission(req: ReportRequest, res: ReportResponse, userId: number) {
     try {
         const { contentId, contentType, explanation } = req.body || {};
 
@@ -77,10 +77,7 @@ async function handleReportSubmission(req: ReportRequest, res: ReportResponse) {
         if (!contentExists) {
             return res.status(404).json({ error: "Content not found." });
         }
-
-        // Get userId from authMiddleware
-        const { userId } = await authMiddleware(req, res);
-        if (!userId) return;
+        
 
         // Create a new report in the database
         const newReport = await prisma.report.create({
