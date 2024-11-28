@@ -13,8 +13,9 @@ import { simulateBlogCreationAPI } from "@/components/mockApi"; // Mock API func
 import BlogCreationModal from "./modals/BlogModal";
 
 
-const visitorItems: DropdownItem[] = [
+const userItems: DropdownItem[] = [
   { label: "Settings", link: "/settings" },
+
 ];
 
 
@@ -22,15 +23,20 @@ const Header: React.FC = () => {
   const { user, logout } = useUser(); // Access user state and logout function from UserContext
     const { theme, toggleTheme } = useTheme();
     const router = useRouter();
+
+    console.log(JSON.stringify(user));
   
     const handleLogo = () => {
-      router.push(user ? "/home" : "/");
+      router.push(user? "/home" : "/");
     };
+
+    let items = [
+      { label: "Settings", link: "/settings" },
+    ];
   
     const showSearchBar = ["/home"].includes(router.pathname);
   // const login = user != null;
 
-  const login = true;
   const [showModal, setShowModal] = useState(false);
 
   const handleCreateBlog = async (data: { title: string; description: string; tags: string[] }) => {
@@ -52,7 +58,7 @@ const Header: React.FC = () => {
       {/* Logo */}
       <div>
         <button
-          onClick={() => {handleLogo}}
+          onClick={handleLogo}
           className="flex justify-between font-mono font-bold text-2xl"
         >
           <img src="/icons/logo.png" className="object-scale-down h-10 w-10" alt="Logo" />
@@ -73,7 +79,7 @@ const Header: React.FC = () => {
           trigger={<img src="/icons/menu.png" className="object-scale-down h-10 w-10" />}
           items={[
             { label: "Home", link: "/home" },
-            { label: "Code", link: "/editor" },
+            { label: "Code", link: "/template/-1" },
           ]}
         />
 
@@ -82,17 +88,19 @@ const Header: React.FC = () => {
             <PageDropDown
               id="profileDropdown"
               trigger={<img src={user.avatar} className="object-scale-down h-10 w-10 rounded-full" alt="Profile" />}
-              items={visitorItems}
+              items={userItems}
             />
           )}        
 
           {/* Dynamic Button */}
           {user ? (
-            <Link href="/createBlog">
-              <button className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition">
+            
+              <button 
+              onClick = {() => setShowModal(true)}
+              className="flex flex-wrap bg-blue-500 px-2 py-2 rounded hover:bg-blue-700 transition">
                 Create Blog
               </button>
-            </Link>
+          
           ) : (
             <Link href="/">
               <button className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-700 transition">

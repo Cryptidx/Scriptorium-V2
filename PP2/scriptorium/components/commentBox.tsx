@@ -79,6 +79,10 @@
 import React, { useState } from "react";
 import ReplyInput from "./reply-input";
 import { fetchComments, addComment } from "./mockApi"; // Import mock API functions
+import CommentButton from "./comment-button";
+import VoteButton from "./vote-button";
+import { Flag, ThumbsDown, ThumbsDownF, ThumbsUp, ThumbsUpF } from "@/common/icons";
+import ReportCreationModal from "./modals/ReportCreationModal";
 
 interface CommentProps {
   comment: any;
@@ -90,6 +94,19 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
   const [hasMoreReplies, setHasMoreReplies] = useState(true);
   const [replyPage, setReplyPage] = useState(1);
   const [replyInputVisible, setReplyInputVisible] = useState(false);
+
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportComment, setReportComment] = useState("");
+
+  const handleFlagClick = (title: string) => {
+    setReportComment(title); // Set the title of the item being reported
+    setShowReportModal(true); // Show the modal
+  };
+
+  const handleReportSubmit = (data: { explanation: string }) => {
+    console.log("Report Submitted for:", reportComment, "Data:", data);
+    setShowReportModal(false); // Close the modal after submission
+  };
 
   const loadReplies = async () => {
     const response = await fetchComments(comment.id, replyPage);
@@ -111,39 +128,73 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
   };
 
   return (
-    <div className={`mt-4 ml-${level * 4}`}>
-      <div className="flex space-x-4">
-        <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-        <div>
-          <p className="font-bold">{comment.author}</p>
-          <p>{comment.description}</p>
-          <div className="mt-2 flex space-x-4">
-            <button
-              className="text-blue-500"
-              onClick={() => setReplyInputVisible(!replyInputVisible)}
-            >
-              Reply
-            </button>
+    <div className={`relative mt-4 ${level > 0 ? 'ml-4' : ''}`}>
+      <div className="absolute left-[31px] top-[45px] bottom-0 w-1 border-l-2 border-gray-800"></div>
+      <div className="relative pl-3">
+        <div className="flex space-x-4">
+          <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+          <div>
+            <p className="font-bold">{comment.author}</p>
+            <p>{comment.description}</p>
+            <div className="mt-2 flex space-x-4">
+              <button
+                className="text-blue-500"
+                onClick={() => setReplyInputVisible(!replyInputVisible)}
+              >
+                Reply
+              </button>
+
+              <div className="flex-1 flex items-start justify-start">
+              <div className="flex flex-col items-start justify-start">
+                <div className="flex flex-inline space-x-5">
+                  <div>
+                    <VoteButton
+                      upvoteIcon={<ThumbsUp className="object-scale-down h-5 w-5" />}
+                      upvoteActiveIcon={<ThumbsUpF className="object-scale-down h-5 w-5" />}
+                      downvoteIcon={<ThumbsDown className="object-scale-down h-5 w-5" />}
+                      downvoteActiveIcon={<ThumbsDownF className="object-scale-down h-5 w-5" />}
+                      initialText="0"
+                      changeText="1"
+                    />
+                  </div>
+
+                  <div className="inline-flex items-center bg-gray-200 rounded-full shadow-sm border-gray-500 border-2 pr-2 pl-2">
+                    <button
+                      onClick={() => handleFlagClick(comment.comment)}
+                      className="text-xs font-bold"
+                    >
+                      <Flag className="object-scale-down h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+
+                <ReportCreationModal
+                  title={reportComment}
+                  isOpen={showReportModal}
+                  onClose={() => setShowReportModal(false)}
+                  onSubmit={handleReportSubmit}
+                />
+              </div>
+            </div>
+
+            </div>
           </div>
         </div>
+        {replyInputVisible && (
+          <ReplyInput
+            parentId={comment.id} 
+            onSubmit={(text) => handleAddReply(comment.id, text)}
+          />
+        )}
+        {replies.map((reply) => (
+          <CommentBox key={reply.id} comment={reply} level={level + 1} />
+        ))}
+        {hasMoreReplies && (
+          <button onClick={loadReplies} className="text-blue-500 mt-2 ml-[56px]">
+            Load More Replies
+          </button>
+        )}
       </div>
-
-      {replyInputVisible && (
-        <ReplyInput
-          parentId={comment.id} // Pass the parentId explicitly
-          onSubmit={(text) => handleAddReply(comment.id, text)}
-        />
-      )}
-
-      {replies.map((reply) => (
-        <CommentBox key={reply.id} comment={reply} level={level + 1} />
-      ))}
-
-      {hasMoreReplies && (
-        <button onClick={loadReplies} className="text-blue-500 mt-2 ml-4">
-          Load More Replies
-        </button>
-      )}
     </div>
   );
 };

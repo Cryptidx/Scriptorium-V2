@@ -48,7 +48,7 @@ const ReplyInput: React.FC<ReplyInputProps> = ({ parentId, onSubmit }) => {
   };
 
   return (
-    <div className="mt-2 ml-4">
+    <div className="mt-2 ml-[56px]">
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
