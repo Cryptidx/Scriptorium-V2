@@ -10,17 +10,19 @@ interface ReportPopUpProps {
   isOpen: boolean;
   onClose: () => void;
   blogId: number | null;
+  type: string; // comment or blog
 }
 
 const ReportPopUp: React.FC<ReportPopUpProps> = ({
   isOpen,
   onClose,
   blogId,
+  type
 }) => {
   const[reports, setReports] = useState<string[]>([]);
 
     const callingApi = async () => {
-        return await apiCallText(`/api/blog/${blogId}`, {
+        return await apiCallText(`/api/` + type + `/${blogId}`, {
             method: "GET",
           });
     }
