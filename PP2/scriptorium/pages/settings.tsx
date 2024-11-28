@@ -192,7 +192,6 @@ const avatarUpdate = () => {
 
   return (
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex-1 flex items-center justify-center py-10">
       <div className={`flex ${wrapped ? 'flex-col justify-center' : 'flex-row justify-between'} items-center bg-white max-w-[90%] min-w-[90%] min-h-[90%] border-[20px] border-white shadow-lg px-10 rounded-lg`}>
         {loading ? (
