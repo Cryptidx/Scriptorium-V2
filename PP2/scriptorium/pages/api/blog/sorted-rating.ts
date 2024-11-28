@@ -66,6 +66,18 @@ export default async function handler(req: BlogSortingRequest, res: BlogSortingR
             orderBy: { upvotes: "desc" },
             skip: skip,
             take: limitInt,
+            include: {
+                author: {
+                  select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                      email: true,
+                      role: true
+                  }
+                  },  
+                tags: true,  
+              },
         });
 
         // find current user to see if they have any reported blogs

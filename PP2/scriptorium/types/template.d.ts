@@ -6,7 +6,6 @@ import {Blog, Template} from "@types/global";
 export interface Template {
     id: number;
     ownerId: number;
-    name: string;
     code: string;
     language: string;
     title: string;
