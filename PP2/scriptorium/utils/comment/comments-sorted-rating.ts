@@ -105,6 +105,15 @@ export default async function handlerSorting(req: SortingCommentsRequest, res: S
                   subcomments: true, // Get the count of subcomments
                 },
               },
+              author: {
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    email: true,
+                    role: true
+                }
+                },    
             },
           });
           

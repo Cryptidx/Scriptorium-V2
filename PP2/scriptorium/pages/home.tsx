@@ -12,6 +12,34 @@ import { DropdownItem } from "@/types/dropdown";
 import { useState } from "react";
 import PaginationButton from "@/components/buttons/Paginating"; // Import the reusable component
 
+const fetchBlogs = async (page: number): Promise<any> => {
+  try {
+    const token = localStorage.getItem("accessToken");  
+
+    // Call the blogs API with pagination parameters
+    const response = await fetch(`/api/blog?page=${page}&limit=6`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}), // Include token if available
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.status !== 200) {
+      console.error(data.error || "Failed to fetch blogs.");
+      return null;
+    }
+
+    return data; // Return the response data
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    return null;
+  }
+};
+
+
 // should work for visitor and user
 // home is basically blogs
 const HomePage = () => {
