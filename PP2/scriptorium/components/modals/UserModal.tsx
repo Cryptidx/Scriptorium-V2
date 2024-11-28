@@ -92,9 +92,9 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         avatar: formData.avatar})
       onClose();
       return;
-      
-    } catch (error) {
 
+    } catch (error) {
+      console.error(error);
     }
 
 
