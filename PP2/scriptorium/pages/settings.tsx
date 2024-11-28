@@ -1,7 +1,7 @@
 import Header from "@/components/header";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useUser } from "@/context/userContext";
+import { useUser } from "@/context/userContextHeader";
 import Link from "next/link";
 import { apiCall } from "@/utils/auth-api-w-refresh";
 import { defaultLocalStorage } from "@/utils/default";
@@ -9,6 +9,7 @@ import { User } from "@/types/user";
 import BlogPreview from "@/components/blogPreview";
 import ReportPreview from "@/components/reportPreview";
 import ReportDropdown from "@/components/reportsPreview";
+import UserEditModal from "@/components/modals/UserModal";
 
 interface UserApi {
     message: string;
@@ -20,10 +21,12 @@ const Settings = () => {
   const [id, setId] = useState(-1);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [avatar, setAvatar] = useState("");
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(true);
   const [wrapped, setWrapped] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const blogs = [
     {
@@ -93,6 +96,7 @@ const Settings = () => {
       },
   ];
 
+  const { refreshUser } = useUser();
 
   const router = useRouter();
 
@@ -170,7 +174,8 @@ const Settings = () => {
                 setId(data.user.id);
                 setEmail(data.user.email);
                 setAvatar(data.user.avatar || "");
-                setName(data.user.firstName + " " + data.user.lastName);
+                setName(data.user.firstName);
+                setLastName(data.user.lastName);
                 setPhoneNumber(data.user.phoneNumber || "");
                 setRole(data.user.role);
             });
@@ -186,9 +191,25 @@ const avatarUpdate = () => {
     alert("Update Avatar");
   };
 
-  const handleUpdate = () => {
+  const handleOutput = () => {
     alert("Update User");
   };
+
+  const handleUserSubmit = (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    avatar: string;
+  }) => {
+    setName(data.firstName);
+    setLastName(data.lastName);
+    setEmail(data.email);
+    setPhoneNumber(data.phoneNumber);
+    setAvatar(data.avatar);
+    refreshUser();
+    setModalOpen(false);
+  }
 
   return (
     <div className="h-screen flex flex-col">
@@ -219,17 +240,31 @@ const avatarUpdate = () => {
 
               <div className={`flex flex-col ${wrapped ? '' : 'flex-grow'} justify-center`}>
                 <div className={`${wrapped ? 'mt-6' : 'mt-6 space-y-6'}`}>
-                  <h2 className={`${wrapped ? 'text-2xl' : 'text-3xl'} font-bold`}>Name: {name}</h2>
+                  <h2 className={`${wrapped ? 'text-2xl' : 'text-3xl'} font-bold`}>Name: {name} {lastName}</h2>
                   <h2 className={`${wrapped ? 'text-2xl' : 'text-3xl'} font-bold`}>Email: {email}</h2>
                   {phoneNumber && <h2 className={`${wrapped ? 'text-2xl' : 'text-3xl'} font-bold`}>Phone Number: {phoneNumber}</h2>}
                 </div>
 
                 <button
                   className="mt-6 w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                  onClick={() => alert('Update Profile')}
+                  onClick={() => setModalOpen(true)}
                 >
                   Update
                 </button>
+
+                <UserEditModal
+                  isOpen={modalOpen}
+                  onClose={() => setModalOpen(false)}
+                  onSubmit={handleUserSubmit}
+                  defaultValues={{
+                        "firstName": name,
+                        "lastName": lastName,
+                        "email": email,
+                        "phoneNumber": phoneNumber,
+                        "avatar": avatar
+                    }
+                  }
+                />
 
                 {role === "user" ? (
                     <>
