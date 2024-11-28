@@ -9,30 +9,17 @@ import { apiCall } from "@/utils/auth-api-w-refresh";
 import { useUser } from "@/context/userContextHeader";
 import { MoonIcon, SunIcon } from "@/common/icons";
 import { DropdownItem } from '../types/dropdown.d';
+import { simulateBlogCreationAPI } from "@/components/mockApi"; // Mock API function for blog creation
+import BlogCreationModal from "./modals/BlogModal";
 
-
-// Declare the type inline for the icons
-
-
-
-// const userItems: DropdownItem[] = [
-//   { label: "Profile", link: "/home" },
-//   { label: "Settings", link: "/settings" },
-//   { label: "Logout", link: "/" },
-// ];
 
 const visitorItems: DropdownItem[] = [
   { label: "Settings", link: "/settings" },
 ];
 
-// const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // Tracks which dropdown is open
 
-// const handleDropdownToggle = (dropdownName: string) => {
-//   setActiveDropdown((prev) => (prev === dropdownName ? null : dropdownName));
-// };
-  
-  const Header: React.FC = () => {
-    const { user, logout } = useUser(); // Access user state and logout function from UserContext
+const Header: React.FC = () => {
+  const { user, logout } = useUser(); // Access user state and logout function from UserContext
     const { theme, toggleTheme } = useTheme();
     const router = useRouter();
   
@@ -41,42 +28,48 @@ const visitorItems: DropdownItem[] = [
     };
   
     const showSearchBar = ["/home"].includes(router.pathname);
+  // const login = user != null;
 
-    return (
-        <header className="flex justify-between items-center p-4 bg-[#132D5F] text-white">
-            {/* Logo */}
-            <div>
-                <button onClick={handleLogo} className="flex justify-between font-mono font-bold text-2xl">
-                    <img src="/icons/logo.png" className="object-scale-down h-10 w-10" alt="Logo" />
-                    <p className="px-2 content-center">Scriptorium</p>
-                </button>
-            </div>
+  const login = true;
+  const [showModal, setShowModal] = useState(false);
 
-          {/* Search Bar */}
-          {showSearchBar && <SearchBar />}
+  const handleCreateBlog = async (data: { title: string; description: string; tags: string[] }) => {
+    try {
+      // Simulate API call to create blog
+      const newBlog = await simulateBlogCreationAPI(data);
 
-            
+      // Route to the new blog page
+      router.push(`/blog/${newBlog.id}`);
+      
 
-            {/* Navigation */}
-            <nav className="flex items-center space-x-5">
-                {/* <Link href="/home">Home</Link>
-                <Link href="/codeEditor">Code</Link> */}
-                {/* <PageDropDown 
-                src="/icons/menu.png"
-                
-                items={[
-        { label: "Home", link: "/home" },
-        { label: "Code", link: "/codeEditor" },
-        { label: "Templates", link: "/templates" }
-        ]} 
-        isProfile="0"/> */}
+    } catch (error) {
+      console.error("Failed to create blog:", error);
+    }
+  };
 
-        {/* <DropdownProvider>
+  return (
+    <header className="flex justify-between items-center p-4 bg-[#132D5F] text-white">
+      {/* Logo */}
+      <div>
+        <button
+          onClick={() => {handleLogo}}
+          className="flex justify-between font-mono font-bold text-2xl"
+        >
+          <img src="/icons/logo.png" className="object-scale-down h-10 w-10" alt="Logo" />
+          <p className="px-2 content-center">Scriptorium</p>
+        </button>
+      </div>
+
+
+      {showSearchBar && <SearchBar />}
+     
+      <nav className="flex items-center space-x-5">
         
-        </DropdownProvider>
-         */}
+      {/* Navigation */}
+        <nav className="flex items-center space-x-5">
+    
         <PageDropDown
-        id="burgerDropdown"
+          id="burgerDropdown"
           trigger={<img src="/icons/menu.png" className="object-scale-down h-10 w-10" />}
           items={[
             { label: "Home", link: "/home" },
@@ -122,6 +115,18 @@ const visitorItems: DropdownItem[] = [
               >
                     {theme === "light" ? <MoonIcon className="h-6 w-6" /> : <SunIcon className="h-6 w-6" />}
               </button>
+            </nav>
+
+            {showModal && (
+              <div className="text-black">
+                <BlogCreationModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onSubmit={handleCreateBlog}
+              />
+              </div>
+              
+            )}
             </nav>
         </header>
     );
