@@ -110,7 +110,6 @@ const handleEditSubmit = async (data: { title: string; description: string; tags
   
       return (
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex flex-col content-center mt-5 space-y-1">
         <div className="flex justify-center">
           <h1 className="text-3xl font-bold">{blog.title}</h1>

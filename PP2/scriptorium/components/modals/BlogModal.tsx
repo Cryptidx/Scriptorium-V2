@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+
 interface BlogCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -8,17 +9,23 @@ interface BlogCreationModalProps {
     description: string;
     tags: string[];
   }) => void;
+  defaultValues?: {
+    title?: string;
+    description?: string;
+    tags?: string[];
+  }; // Optional default values for updating
 }
 
 const BlogCreationModal: React.FC<BlogCreationModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  defaultValues,
 }) => {
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    tags: [""],
+    title: defaultValues?.title || "",
+    description: defaultValues?.description || "",
+    tags: defaultValues?.tags || [""],
   });
 
   if (!isOpen) return null;
@@ -36,6 +43,7 @@ const BlogCreationModal: React.FC<BlogCreationModalProps> = ({
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
+
 
   const addTag = () => setFormData((prev) => ({ ...prev, tags: [...prev.tags, ""] }));
   const removeTag = (index: number) =>

@@ -1,9 +1,10 @@
-import Header from "@/components/header";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { defaultLocalStorage } from "@/utils/default";
 import Link from "next/link";
 import { DropdownProvider } from "@/components/drop-downs/dropdownContext";
+import { useUser } from "@/context/userContextHeader";
+import RedirectIfAuthenticated from "@/context/redirectIfAuth";
 
 const MainPage = () => {
   const [email, setemail] = useState("");
@@ -12,9 +13,12 @@ const MainPage = () => {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+  const {refreshUser, user} = useUser();
+  console.log(user)
 
   useEffect(() => {
     defaultLocalStorage();
+
   }, []);
 
   const handleLogin = async (event: React.FormEvent) => {
@@ -46,6 +50,9 @@ const MainPage = () => {
       // Store tokens in local storage
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+
+      // Refresh user context NEEDED FOR HEADER
+      await refreshUser();
     
       // Redirect to home page
       router.push("/home");
@@ -59,9 +66,9 @@ const MainPage = () => {
   
 
   return (
+    <RedirectIfAuthenticated>
     <div className="h-screen flex flex-col">
       <DropdownProvider>
-      <Header />
       <div className="flex-1 flex items-center justify-center py-10">
         <div className="flex flex-col items-center justify-center bg-white w-[90%] h-[90%] shadow-lg px-10 rounded-lg">
           <h1 className="text-center text-5xl font-mono pb-3">Scriptorium</h1>
@@ -121,6 +128,7 @@ const MainPage = () => {
       </DropdownProvider>
       
     </div>
+    </RedirectIfAuthenticated>
   );
 };
 

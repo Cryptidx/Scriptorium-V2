@@ -1,7 +1,9 @@
-import Header from "@/components/header";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { defaultLocalStorage } from "@/utils/default";
+import { useUser } from "@/context/userContextHeader";
+import RedirectIfAuthenticated from "@/context/redirectIfAuth";
+
 
 const SignupPage: React.FC = () => {
   const router = useRouter();
@@ -16,11 +18,10 @@ const SignupPage: React.FC = () => {
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { user, refreshUser } = useUser();
 
-  useEffect(() => {
-    defaultLocalStorage();
-  }, []);
 
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -89,14 +90,15 @@ const SignupPage: React.FC = () => {
     } catch (error) {
       console.error("Error during signup:", error);
       setErrorMessage("An unexpected error occurred. Please try again later.");
+
     } finally {
       setLoading(false);
     }
   };
 
   return (
+    <RedirectIfAuthenticated>
     <div className="h-screen flex flex-col">
-      <Header />
       <div className="flex-1 flex items-center justify-center py-10">
         <div className="flex flex-col items-start justify-start bg-white w-[90%] h-[90%] shadow-lg px-10 py-7 rounded-lg">
           <h4 className="text-center text-xl font-mono pb-3">
@@ -190,6 +192,7 @@ const SignupPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </RedirectIfAuthenticated>
   );
 };
 
