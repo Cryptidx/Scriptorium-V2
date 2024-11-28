@@ -128,9 +128,6 @@ async function handlerGet(req: TemplateRequest, res: TemplateResponse) {
       const numLimit = parseInt(limit, 10) || 10;
       const numPage = parseInt(page, 10) || 1;
   
-      if (numLimit > 20) {
-        return res.status(400).json({ error: "limit must be less than 20, limit too high." });
-      }
 
       let numForkedFromId;
   
