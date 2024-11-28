@@ -6,10 +6,17 @@ import TemplateInfo from "@/components/editor/TemplateInfo";
 import { Template, Tag } from "@/types/template";
 import { defaultLocalStorage } from "@/utils/default";
 import { useRouter } from "next/router";
+import { User } from "@/types/user";
+import TemplateCreationModal from "@/components/modals/TemplateModal";
 
 interface TempApi {
   message: string;
   template: Template;
+}
+
+interface UserApi {
+    message: string;
+    user: User;
 }
 
 const TemplateEditor: React.FC = () => {
@@ -20,6 +27,7 @@ const TemplateEditor: React.FC = () => {
   const [error, setError] = useState("");
   const [code, setCode] = useState("// Start coding here!"); // Maintain the current code
   const [title, setTitle] = useState("Code Editor")
+  const [explanation, setExplanation] = useState("")
   const [language, setLanguage] = useState("javascript");
   const [inputValue, setInputValue] = useState(""); // State for user input
   const [tempId, setTempId] = useState<number | null>(null);
@@ -27,7 +35,10 @@ const TemplateEditor: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [fork, setFork] = useState("");
   const [authorId, setAuthorId] = useState(-1);
+  const [userId, setUserId] = useState<number | null>(null);
   const [authorName, setAuthorName] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [forked, setForked] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -41,6 +52,25 @@ const TemplateEditor: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
+    fetch("/api/users/user-info", {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ` + localStorage.getItem("accessToken"), // Ensure this token is valid
+        }
+    }).then((response) => {
+        if (!response.ok){
+            return;
+        }
+        return response.json();
+    }).then((data: UserApi) => {
+        if (!data || !data.user) {
+            return;
+        }
+        setUserId(data.user.id);
+    });
+  }, []);
+
+  useEffect(() => {
     if (tempId === null || tempId === -1) return;
 
     fetch(`/api/template/${tempId}`)
@@ -51,6 +81,7 @@ const TemplateEditor: React.FC = () => {
         setAuthorId(data.template.ownerId);
         setAuthorName(data.template.name);
         setTitle(data.template.title);
+        setExplanation(data.template.explanation);
         setCode(data.template.code);
         setLanguage(data.template.language);
         setTags(data.template.tags?.map((tag: Tag) => tag.name) || []);
@@ -83,9 +114,35 @@ const TemplateEditor: React.FC = () => {
     // const simulatedOutput = `Executed ${language} code with input: "${inputValue}"`;
     // setOutput(simulatedOutput); // Set the output
   };
+  
   const handleSave = () => {
-    console.log("Saving code:", code);
-    alert("Code saved!");
+    setForked(false);
+    setModalOpen(true);
+  };
+
+  const handleFork = () => {
+    setForked(true);
+    setModalOpen(true);
+  };
+
+  const handleSubmit = (data: {
+    id: string;
+    language: string;
+    title: string;
+    code: string;
+    explanation: string;
+    tags: string[];
+    }) => {
+        if (forked || tempId === -1) {
+            alert("New File Created!");
+            router.push(`/template/${data.id}`);
+            return;
+        }
+
+        router.reload();
+        
+        setModalOpen(true);
+        alert("Code Saved!");
   };
 
   const handleLanguageChange = (newLanguage: string) => {
@@ -117,12 +174,28 @@ const TemplateEditor: React.FC = () => {
                   onSave={handleSave}
                   onLanguageChange={handleLanguageChange}
                   showForkButton={tempId !== -1}
-                  showSaveButton={true}
-                  editable={tempId === -1 || authorId === 1} // UPDATE TO PROPER AUTHORID AND USERID
-                  onFork={handleSave}
+                  showSaveButton={tempId === -1 || authorId === userId}
+                  editable={tempId === -1 || authorId === userId} // UPDATE TO PROPER AUTHORID AND USERID
+                  onFork={handleFork}
                   title={title}
                 />
               </div>
+
+              <TemplateCreationModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSubmit={handleSubmit}
+                defaultValues={{
+                    forkedFromId: fork,
+                    code: code,
+                    language: language,
+                    title: title,
+                    explanation: explanation,
+                    tags: tags
+                }}
+                tempId={tempId}
+                forked={forked}
+              />
       
               {/* Right Side: Output and Template Info */}
               <div className="flex-[0.8] flex flex-col space-y-6 overflow-auto mt-4 lg:mt-0 lg:ml-4">

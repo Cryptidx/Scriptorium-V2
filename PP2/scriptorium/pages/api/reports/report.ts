@@ -77,6 +77,7 @@ async function handleReportSubmission(req: ReportRequest, res: ReportResponse, u
         if (!contentExists) {
             return res.status(404).json({ error: "Content not found." });
         }
+        
 
         // Create a new report in the database
         const newReport = await prisma.report.create({

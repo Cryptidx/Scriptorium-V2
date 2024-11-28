@@ -169,7 +169,8 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
                 </div>
 
                 <ReportCreationModal
-                  title={reportComment}
+                  id={comment.id}
+                  type={"COMMENT"}
                   isOpen={showReportModal}
                   onClose={() => setShowReportModal(false)}
                   onSubmit={handleReportSubmit}
