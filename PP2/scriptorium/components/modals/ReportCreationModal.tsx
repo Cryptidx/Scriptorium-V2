@@ -6,7 +6,7 @@ interface ReportCreationModalProps {
   type: string;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { explanation: string }) => void;
+  onSubmit: () => void;
 }
 
 const ReportCreationModal: React.FC<ReportCreationModalProps> = ({id, type, isOpen, onClose, onSubmit }) => {

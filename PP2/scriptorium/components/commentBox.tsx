@@ -103,8 +103,8 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
     setShowReportModal(true); // Show the modal
   };
 
-  const handleReportSubmit = (data: { explanation: string }) => {
-    console.log("Report Submitted for:", reportComment, "Data:", data);
+  const handleReportSubmit = () => {
+    console.log("Report Submitted");
     setShowReportModal(false); // Close the modal after submission
   };
 
