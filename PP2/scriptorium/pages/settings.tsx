@@ -181,6 +181,8 @@ const Settings = () => {
                     if (!data || !data.templates) return;
 
                     setUserTemps(data.templates);
+
+                    setLoading(false);
                 })
             }).catch(() => router.push("/"));
 
@@ -191,15 +193,13 @@ const Settings = () => {
     }, []);
 
     useEffect(() => {
+        
         const fetchBlogReports = async () => {
           try {
             const response = await apiCallText(
               "/api/reports/report?page=1&pageSize=2&contentType=BLOG",
               {
                 method: "GET",
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-                },
               }
             );
       
@@ -235,15 +235,15 @@ const Settings = () => {
             );
       
             setBlogReports(objects);
-            setLoading(false);
           } catch (error) {
             console.error("Error fetching blog reports:", error);
-            router.push("/");
           }
         };
-      
-        fetchBlogReports();
-      }, [router]);
+        if (role === "SYS_ADMIN"){
+            fetchBlogReports();
+            setLoading(false);
+        }
+      }, [role]);
 
   const handleUserSubmit = (data: {
     firstName: string;

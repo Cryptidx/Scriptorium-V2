@@ -75,7 +75,13 @@ const TemplateEditor: React.FC = () => {
     if (tempId === null || tempId === -1) return;
 
     fetch(`/api/template/${tempId}`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+            router.push("/template/-1");
+        }
+
+        return response.json();
+      })
       .then((data: TempApi) => {
         if (!data?.template) return;
 
@@ -88,7 +94,7 @@ const TemplateEditor: React.FC = () => {
         setTags(data.template.tags?.map((tag: Tag) => tag.name) || []);
         setBlogs(data.template.blogs || []);
       })
-      .catch((error) => console.error("Error fetching template:", error));
+      .catch((error) => alert("error"));
   }, [tempId]);
 
   const handleRun = () => {
