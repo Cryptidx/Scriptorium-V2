@@ -667,7 +667,10 @@ const BlogPage: React.FC = () => {
 
 
           <div className="flex justify-center">
-            <h1 className="text-3xl font-bold">{blog.title}</h1>
+            <div className="flex flex-wrap">
+            <h1 className="text-3xl font-bold ">{blog.title}</h1>
+            </div>
+            
           </div>
   
           <div className="flex justify-center">
@@ -704,8 +707,11 @@ const BlogPage: React.FC = () => {
         </div>
   
         <div className="flex-1 flex items-center justify-center py-4">
-          <main className="flex flex-col items-start justify-start bg-white w-[95%] h-[95%] shadow-lg px-10 pt-10 pb-[25%]">
+          <main className="flex flex-col break-words items-start justify-start bg-white w-[95%] h-[95%] shadow-lg px-10 pt-10 pb-[25%] ">
+            <div className="max-w-[100%]">
             <p>{blog.description}</p>
+            </div>
+            
           </main>
         </div>
   
