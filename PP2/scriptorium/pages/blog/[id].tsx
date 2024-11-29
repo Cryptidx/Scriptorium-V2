@@ -543,6 +543,7 @@ const BlogPage: React.FC = () => {
   const [reportTitle, setReportTitle] = useState("");
   const [showTempLinkModal, setShowTempLinkModal] = useState(false);
   const [showReports, setShowReports] = useState(false);
+  const [relatedTemps, setRelatedTemps] = useState<Template[]>([])
   const { user } = useUser();
 
   const flagged = blog?.flagged;
@@ -582,6 +583,7 @@ const BlogPage: React.FC = () => {
         try {
             let blo = await apiCall(`/api/blog/${id}`, { method: "GET" });
           const fetchedBlog = blo.blog;
+          setRelatedTemps(blo.blog.templates)
           setBlog(fetchedBlog);
         } catch (error) {
           console.error("Error fetching blog:", error);
@@ -749,17 +751,17 @@ const BlogPage: React.FC = () => {
 
         
         <h2 className="text-3xl font-bold ml-[10px]">Linked Templates:</h2>
-        <div className={`mt-6 flex flex-wrap justify-around flex-grow  border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
-            {blogs.map((blog, index) => (
+        <div className={`mt-6 flex flex-col overflow-y-auto min-h-[600px] min-w-[100px] flex-col overflow-y-auto max-h-[300px] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
+            {relatedTemps.map((blog, index) => (
             <BlogPreview
                 key={index}
                 language={blog.language}
                 title={blog.title}
-                description={blog.description}
-                author={blog.author}
-                tags={blog.tags}
+                description={blog.explanation}
+                author={blog.owner.firstName + " " + blog.owner.lastName}
+                tags={blog.tags?.map((tag) => tag.name) || []}
                 blogId={id as string}
-                tempId={blog.id}
+                tempId={String(blog.id)}
             />
             ))}
         </div>
