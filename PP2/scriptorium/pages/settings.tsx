@@ -367,7 +367,7 @@ const Settings = () => {
                         {userTemps.length === 0 ? (
                         <h2 className={`${wrapped ? 'text-xl' : 'text-2xl'} mt-3 font-normal`}>User has no templates</h2>
                         ) : (
-                        <div className={`mt-6 flex flex-col overflow-y-auto max-h-[300px] min-w-[100px] ${wrapped ? '' : 'flex-col overflow-y-auto max-h-[300px]'} border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
+                        <div className={`mt-6 flex flex-col overflow-y-auto min-w-[100px] ${wrapped ? '' : 'flex-col overflow-y-auto max-h-[300px]'} border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
                             {userTemps.map((temps, index) => (
                                 <div className={"`mt-6 flex flex-col overflow-y-auto min-h-[250px] flex-col overflow-y-auto max-h-[300px] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`"} onClick={() => router.push("/template/" + temps.id)}>
                                 <BlogPreview
