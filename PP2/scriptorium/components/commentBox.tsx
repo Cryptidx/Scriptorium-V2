@@ -83,20 +83,42 @@ import CommentButton from "./comment-button";
 import VoteButton from "./vote-button";
 import { Flag, ThumbsDown, ThumbsDownF, ThumbsUp, ThumbsUpF } from "@/common/icons";
 import ReportCreationModal from "./modals/ReportCreationModal";
+import { useUser } from "@/context/userContextHeader";
+import { useRouter } from "next/router";
+import { apiCall } from "@/utils/auth-api-w-refresh";
 
 interface CommentProps {
-  comment: any;
+  comment: Comment;
   level: number;
 }
 
+interface FullComment
+ {
+  message: string;
+  data: Comment[]; // List of comments
+  pagination: {
+    total: number;
+    firstPage: number;
+    currentPage: number;
+    totalPages: number;
+    pagesLeft: number;
+    limit: number;
+  } 
+  author:string} 
+
+
 const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
-  const [replies, setReplies] = useState<any[]>([]);
+  const [replies, setReplies] = useState<FullComment|null>(null);
   const [hasMoreReplies, setHasMoreReplies] = useState(true);
   const [replyPage, setReplyPage] = useState(1);
   const [replyInputVisible, setReplyInputVisible] = useState(false);
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportComment, setReportComment] = useState("");
+  const { user } = useUser();
+  const router = useRouter();
+  const { id } = router.query;
+
 
   const handleFlagClick = (title: string) => {
     setReportComment(title); // Set the title of the item being reported
@@ -108,24 +130,62 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
     setShowReportModal(false); // Close the modal after submission
   };
 
-  const loadReplies = async () => {
-    const response = await fetchComments(comment.id, replyPage);
-    setReplies((prev) => [...prev, ...response.data]);
-    setHasMoreReplies(response.hasMore);
-    setReplyPage((prev) => prev + 1);
+  const loadReplies = async (parentId:string) => {
+
+    try {
+      let limit = 5;
+      let query = {page:replyPage, limit:limit};
+      let payload = {method: "GET", query: query}
+      const start = (replyPage - 1) * limit;
+      console.log("reply page is", replyPage)
+      
+
+      const response = await apiCall(`/api/blog/${id}/comment/${parentId}/sorted-rating`, payload);
+
+      console.log("response")
+
+      let hasMore  = response.pagination.total > (start + limit)
+
+      
+      setReplies(response);
+      setHasMoreReplies(hasMore);
+      setReplyPage((prev) => prev + 1);
+
+    } catch (error) {
+      console.error("Failed to load replies:", error);
+    }
+    
   };
 
-  const handleAddReply = async (parentId: string, text: string) => {
-    const newReply = {
-      author: "Current User",
-      description: text,
-      parentId: parentId, // Attach the correct parentId
-    };
+  const handleAddReply = async (parentId:string, parentLevel: string, text: string) => {
 
-    const addedReply = await addComment(newReply);
-    setReplies((prev) => [addedReply, ...prev]);
-    setReplyInputVisible(false);
+    try {
+      const newReply = {
+        description: text,
+        parentLevel: parseInt(parentLevel), // Attach the correct parentId
+      };
+  
+      // await apiCall(`/api/blog/${id}/comment/${parentId}/reply`, {method: "POST", body: JSON.stringify(newReply)});
+
+      // let limit = 5;
+      // let query = {page:replyPage, limit:limit};
+      // let payload = {method: "GET", query: query}
+
+      //const response = await apiCall(`/api/blog/${id}/comment/sorted-rating`, payload);
+      const res = await apiCall(`/api/blog/${id}/comment/${parentId}/reply`, {method: "POST", body: JSON.stringify(newReply)});
+
+
+      const response = res.data;
+      setReplies(response);
+      setReplyInputVisible(false);
+
+    } catch (error) {
+      console.error("Failed to add reply:", error);
+    }
+    
   };
+
+  const flagged = comment.flagged;
 
   return (
     <div className={`relative mt-4 ${level > 0 ? 'ml-4' : ''}`}>
@@ -134,7 +194,23 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
         <div className="flex space-x-4">
           <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
           <div>
-            <p className="font-bold">{comment.author}</p>
+            <div className="flex flex-inline space-x-8">
+            <p className="font-bold">{comment.author.firstName}</p>
+            {flagged && (<div className="flex flex-inline space-x-2 text-xs font-bold">
+            <div className="underline">
+                You've been reported
+                </div>
+                <div>
+                    <button className="px-2  bg-red-500 text-white rounded-lg">
+                    Why?
+                    </button>
+                    
+                </div>
+              
+                
+            </div>)}
+            </div>
+           
             <p>{comment.description}</p>
             <div className="mt-2 flex space-x-4">
               <button
@@ -153,14 +229,15 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
                       upvoteActiveIcon={<ThumbsUpF className="object-scale-down h-5 w-5" />}
                       downvoteIcon={<ThumbsDown className="object-scale-down h-5 w-5" />}
                       downvoteActiveIcon={<ThumbsDownF className="object-scale-down h-5 w-5" />}
-                      initialText="0"
-                      changeText="1"
+                      upvotes = {String(comment.upvotes)}
+                      downvotes = {String(comment.downvotes)}
+                      commentId={String(comment.id)}
                     />
                   </div>
 
-                  <div className="inline-flex items-center bg-gray-200 rounded-full shadow-sm border-gray-500 border-2 pr-2 pl-2">
+                  <div className={`inline-flex items-center rounded-full shadow-sm border-2 pr-2 pl-2 ${flagged ? "bg-red-500 border-red-800" : "bg-gray-200 border-gray-500 "}`}>
                     <button
-                      onClick={() => handleFlagClick(comment.comment)}
+                      onClick={() => handleFlagClick(comment.author.firstName)}
                       className="text-xs font-bold"
                     >
                       <Flag className="object-scale-down h-5 w-5" />
@@ -169,7 +246,7 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
                 </div>
 
                 <ReportCreationModal
-                  id={comment.id}
+                  id={String(comment.id) }
                   type={"COMMENT"}
                   isOpen={showReportModal}
                   onClose={() => setShowReportModal(false)}
@@ -183,15 +260,15 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
         </div>
         {replyInputVisible && (
           <ReplyInput
-            parentId={comment.id} 
-            onSubmit={(text) => handleAddReply(comment.id, text)}
+            parentId={String(comment.id)} 
+            onSubmit={(text) => handleAddReply(String(comment.id), String(comment.level), text)}
           />
         )}
-        {replies.map((reply) => (
+        {replies && replies.data.map((reply) => (
           <CommentBox key={reply.id} comment={reply} level={level + 1} />
         ))}
         {hasMoreReplies && (
-          <button onClick={loadReplies} className="text-blue-500 mt-2 ml-[56px]">
+          <button onClick={() => loadReplies(String(comment.id))} className="text-blue-500 mt-2 ml-[56px]">
             Load More Replies
           </button>
         )}

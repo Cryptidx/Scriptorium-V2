@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 interface ReportCreationModalProps {
   id: string;
-  type: string;
+  type?: string;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: { explanation: string }) => void;
