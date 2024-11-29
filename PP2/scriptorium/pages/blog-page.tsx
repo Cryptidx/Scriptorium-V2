@@ -37,7 +37,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ data }) => {
       {data.map((blog) => (
         <div key={blog.id} onClick={() => handleBlogClick(blog.id.toString())}>
           <BlogPreview
-            title={blog.title || "Untitled"}
+            title={truncateDescription(blog.title || "Untitled", 50)}
             description={truncateDescription(blog.description, 50) || "No description provided"}
             author={blog.author ? `${blog.author.firstName} ${blog.author.lastName}` : "Unknown author"}
             tags={blog.tags?.map((tag) => tag.name) || []} // Map tag objects to their names
