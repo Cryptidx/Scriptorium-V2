@@ -110,8 +110,8 @@ async function handlerGet(req:BlogRequest,res:BlogResponse){
     const parsedTags = tags ? tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
 
     const filters: { AND: Prisma.BlogWhereInput[] } = { AND: [] };
-    if (title) filters.AND.push({ title: { contains: title, mode: "insensitive", } as Prisma.StringFilter, });
-    if (content) filters.AND.push({ description: { contains: content, mode: "insensitive", } as Prisma.StringFilter,});
+    if (title) filters.AND.push({ title: { contains: title.toLocaleLowerCase(), } as Prisma.StringFilter, });
+    if (content) filters.AND.push({ description: { contains: content.toLocaleLowerCase(), } as Prisma.StringFilter,});
     
     if (parsedTags && parsedTags.length > 0) {
         filters.AND.push({

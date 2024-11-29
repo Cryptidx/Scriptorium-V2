@@ -6,6 +6,7 @@ import { UserProvider as UserProviderHeader } from "@/context/userContextHeader"
 import { ThemeProvider } from "@/context/modeContext"; // Adjust the path as necessary
 import { DropdownProvider} from "@/components/drop-downs/dropdownContext";
 import Header from "@/components/header";
+import { SearchProvider } from "@/context/SearchContext";
 
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -13,6 +14,8 @@ export default function App({ Component, pageProps }: AppProps) {
     <DropdownProvider>
       <ThemeProvider>
         <UserProviderHeader>
+        <SearchProvider>
+
     <UserProvider>
       
     <div className="flex flex-col min-h-screen">
@@ -21,6 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
               <Component {...pageProps} />
           </div>
     </UserProvider>
+    </SearchProvider>
     </UserProviderHeader>
     </ThemeProvider>
     </DropdownProvider>
