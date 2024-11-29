@@ -759,6 +759,7 @@ const BlogPage: React.FC = () => {
         <h2 className="text-3xl font-bold ml-[10px]">Linked Templates:</h2>
         <div className={`mt-6 flex flex-col overflow-y-auto min-h-[600px] min-w-[100px] flex-col overflow-y-auto max-h-[300px] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
             {relatedTemps.map((blog, index) => (
+              <div className={"`mt-6 flex flex-col overflow-y-auto min-h-[250px] flex-col overflow-y-auto max-h-[300px] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`"} onClick={() => router.push("/template/" + blog.id)}>
             <BlogPreview
                 key={index}
                 language={blog.language}
@@ -769,6 +770,7 @@ const BlogPage: React.FC = () => {
                 blogId={id as string}
                 tempId={String(blog.id)}
             />
+            </div>
             ))}
         </div>
         {user && (user.id === blog.authorId) && <>

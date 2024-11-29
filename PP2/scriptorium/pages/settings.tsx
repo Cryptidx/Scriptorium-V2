@@ -369,14 +369,16 @@ const Settings = () => {
                         ) : (
                         <div className={`mt-6 flex flex-col overflow-y-auto max-h-[300px] min-w-[100px] ${wrapped ? '' : 'flex-col overflow-y-auto max-h-[300px]'} border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
                             {userTemps.map((temps, index) => (
-                            <BlogPreview
-                                key={index}
-                                title={temps.title}
-                                description={temps.explanation}
-                                author={temps.owner.firstName + " " + temps.owner.lastName}
-                                tags={temps.tags?.map((tag) => tag.name) || []}
-                                language={temps.language}
-                            />
+                                <div className={"`mt-6 flex flex-col overflow-y-auto min-h-[250px] flex-col overflow-y-auto max-h-[300px] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`"} onClick={() => router.push("/template/" + temps.id)}>
+                                <BlogPreview
+                                    key={index}
+                                    title={temps.title}
+                                    description={temps.explanation}
+                                    author={temps.owner.firstName + " " + temps.owner.lastName}
+                                    tags={temps.tags?.map((tag) => tag.name) || []}
+                                    language={temps.language}
+                                />
+                            </div>
                             ))}
                         </div>
                         )}
