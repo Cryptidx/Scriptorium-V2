@@ -63,3 +63,36 @@ export interface CreateCommentResponse extends NextApiResponse {
     error_msg?: string;
   }) => void;
 }
+
+
+// NEW STUFF FOR GET SINGLE COMMENT
+export interface CommentRequestID extends NextApiRequest, AuthRequest {
+  query: {
+    commentId?: string; // Blog ID (from URL query)
+  };
+  body?: {
+    description?: string;
+    upvotes?: number;
+    downvotes?: number;
+    flagged?: boolean;
+  };
+}
+
+export interface CommentResponseID extends NextApiResponse {
+  json: (body: {
+    message?: string; // Success or error message
+    error?: string; // Error message, if any
+    blog?: {
+      id: number;
+      description: string;
+      level: number;
+      blogId: number;
+      authorId: number;
+      createdAt: string;
+      updatedAt: string;
+      parentId?: number | null;
+      author?: { firstName: string; lastName: string }; // Author details
+      reports?: any[]; // Reports, if applicable (for flagged blogs)
+    };
+  }) => void;
+}

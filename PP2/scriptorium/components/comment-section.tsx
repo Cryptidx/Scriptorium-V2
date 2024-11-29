@@ -1156,15 +1156,113 @@
 // export default CommentSection;
 
 
+/// WORKING VERSION FR FR 
+
+// import React, { useState, useEffect } from "react";
+// import CommentBox from "./commentBox";// A single comment/reply component
+// import AddCommentInput from "./addCommentInput"; // Input box for adding top-level comments
+// import { fetchComments, addComment } from "./mockApi"; 
+
+// const CommentSection: React.FC = () => {
+//   const [comments, setComments] = useState<any[]>([]);
+//   const [page, setPage] = useState(1);
+//   const [hasMoreComments, setHasMoreComments] = useState(true);
+
+//   useEffect(() => {
+//     // Load initial comments
+//     loadMoreComments();
+//   }, []);
+
+//   const loadMoreComments = async () => {
+//     const response = await fetchComments(null, page);
+//     setComments((prev) => [...prev, ...response.data]);
+//     setHasMoreComments(response.hasMore);
+//     setPage((prev) => prev + 1);
+//   };
+
+//   const handleAddComment = async (text: string) => {
+//     const newComment = {
+//       author: "Current User",
+//       description: text,
+//       parentId: null,
+//     };
+
+//     const addedComment = await addComment(newComment);
+
+//     if (comments.length < 5) {
+//       setComments((prev) => [addedComment, ...prev]);
+//     } else {
+//       setHasMoreComments(true); // Ensure pagination updates when new comment pushes others down
+//     }
+//   };
+
+//   return (
+//     <div className="w-full pb-[20px] max-w-2xl mx-auto">
+//       <h2 className="text-xl font-bold mb-4">Comment Section</h2>
+//       <AddCommentInput onAddComment={handleAddComment} />
+
+//       {comments.map((comment) => (
+//         <CommentBox key={comment.id} comment={comment} level={0} />
+//       ))}
+
+//       {hasMoreComments && (
+//         <button
+//           onClick={loadMoreComments}
+//           className="w-full mt-4 p-2 bg-blue-500 text-white rounded"
+//         >
+//           Load More Comments
+//         </button>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CommentSection;
+
+
+
+
 import React, { useState, useEffect } from "react";
 import CommentBox from "./commentBox";// A single comment/reply component
 import AddCommentInput from "./addCommentInput"; // Input box for adding top-level comments
 import { fetchComments, addComment } from "./mockApi"; 
+import { apiCall } from "@/utils/auth-api-w-refresh";
+import { useUser } from "@/context/userContextHeader";
+import { useRouter } from "next/router";
+
+
+
+// interface Pagination{
+//   total: number,
+//   firstPage:  number,
+//   currentPage: number,
+//   totalPages:  number,
+//   pagesLeft: number,
+//   limit:  number,
+// }
+
+interface FullComment
+ {
+  message: string;
+  data: Comment[]; // List of comments
+  pagination: {
+    total: number;
+    firstPage: number;
+    currentPage: number;
+    totalPages: number;
+    pagesLeft: number;
+    limit: number;
+  } 
+  author:string} 
 
 const CommentSection: React.FC = () => {
-  const [comments, setComments] = useState<any[]>([]);
+  const router = useRouter();
+  const { id } = router.query;
+  const [comments, setComments] = useState<FullComment|null>(null);
+  const [comment, setComment] =  useState<Comment|null>(null)
   const [page, setPage] = useState(1);
   const [hasMoreComments, setHasMoreComments] = useState(true);
+  const { user } = useUser();
 
   useEffect(() => {
     // Load initial comments
@@ -1172,26 +1270,71 @@ const CommentSection: React.FC = () => {
   }, []);
 
   const loadMoreComments = async () => {
-    const response = await fetchComments(null, page);
-    setComments((prev) => [...prev, ...response.data]);
-    setHasMoreComments(response.hasMore);
-    setPage((prev) => prev + 1);
+    try {
+      let limit = 5;
+      let query = {page:page, limit:limit};
+      let payload = {method: "GET", query: query}
+
+      const start = (page - 1) * limit;
+    
+      const response = await apiCall(`/api/blog/${id}/comment/sorted-rating`, payload);
+      let hasMore  = response.pagination.total > (start + limit)
+
+      console.log(JSON.stringify(response))
+      console.log(JSON.stringify(response.body))
+
+      setComments(response);
+
+      setHasMoreComments(hasMore);
+      setPage((prev) => prev + 1);
+    } catch (error) {
+      console.error("Failed to load comments:", error);
+    }
+    
   };
 
   const handleAddComment = async (text: string) => {
-    const newComment = {
-      author: "Current User",
-      description: text,
-      parentId: null,
-    };
+    
 
-    const addedComment = await addComment(newComment);
+    // const newComment = {
+    //   author: "Current User",
+    //   description: text,
+    //   parentId: null,
+    // };
 
-    if (comments.length < 5) {
-      setComments((prev) => [addedComment, ...prev]);
-    } else {
-      setHasMoreComments(true); // Ensure pagination updates when new comment pushes others down
+    try {
+      const newComment = {
+        description: text,
+      };
+
+      // let addedComment =  await apiCall(`/api/blog/${id}/comment`, {method: "POST", body: JSON.stringify(newComment)});
+      //addedComment["author"] = `${user?.firstName} ${user?.lastName}`;
+
+      let limit = 5;
+      let query = {page:page, limit:limit};
+      let payload = {method: "GET", query: query}
+
+
+      // first add the comment to the list 
+      await apiCall(`/api/blog/${id}/comment`, {method: "POST", body: JSON.stringify(newComment)});
+      
+      // then get the updated sorted ratings of comments
+      // which updates what we look at 
+      const response = await apiCall(`/api/blog/${id}/comment/sorted-rating`, payload);
+      
+  
+      if (comments && comments.pagination.total < 5) {
+        // we want to set the state
+        setComments(response);
+      } else {
+        setHasMoreComments(true); // Ensure pagination updates when new comment pushes others down
+      }
+      
+    } catch (error) {
+      console.error("Failed to add comment:", error);
     }
+
+   
   };
 
   return (
@@ -1199,9 +1342,9 @@ const CommentSection: React.FC = () => {
       <h2 className="text-xl font-bold mb-4">Comment Section</h2>
       <AddCommentInput onAddComment={handleAddComment} />
 
-      {comments.map((comment) => (
+      {comments && (comments.data.map((comment) => (
         <CommentBox key={comment.id} comment={comment} level={0} />
-      ))}
+      )))}
 
       {hasMoreComments && (
         <button
