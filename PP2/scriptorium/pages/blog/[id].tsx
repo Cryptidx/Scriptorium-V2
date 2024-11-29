@@ -756,24 +756,24 @@ const BlogPage: React.FC = () => {
           </div>
         </div>
 
-        
-        <h2 className="text-3xl font-bold ml-[10px]">Linked Templates:</h2>
-        <div className={`mt-6 flex flex-col overflow-y-auto min-h-[600px] min-w-[100px] flex-col overflow-y-auto max-h-[300px] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
-            {relatedTemps.map((blog, index) => (
-              <div className={"`mt-6 flex flex-col overflow-y-auto min-h-[250px] flex-col overflow-y-auto max-h-[300px] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`"} onClick={() => router.push("/template/" + blog.id)}>
-            <BlogPreview
-                key={index}
-                language={blog.language}
-                title={blog.title}
-                description={blog.explanation}
-                author={blog.owner.firstName + " " + blog.owner.lastName}
-                tags={blog.tags?.map((tag) => tag.name) || []}
-                blogId={id as string}
-                tempId={String(blog.id)}
-            />
-            </div>
-            ))}
-        </div>
+      
+        {relatedTemps.length > 0 && <>
+          <h2 className="text-3xl font-bold ml-[10px]">Linked Templates:</h2>
+        <div className={`mt-6 flex flex-col overflow-y-auto min-h-[275px] min-w-[100px] flex-col overflow-y-auto max-h-[300px] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
+              {relatedTemps.map((blog, index) => (
+              <BlogPreview
+                  key={index}
+                  language={blog.language}
+                  title={blog.title}
+                  description={blog.explanation}
+                  author={blog.owner.firstName + " " + blog.owner.lastName}
+                  tags={blog.tags?.map((tag) => tag.name) || []}
+                  blogId={id as string}
+                  tempId={String(blog.id)}
+              />
+              ))}
+          </div></>}
+          
         {user && (user.id === blog.authorId) && <>
         <button
         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
