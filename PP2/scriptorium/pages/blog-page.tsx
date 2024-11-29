@@ -14,11 +14,11 @@ type Blog = {
   tags: { id: number; name: string }[]; // Assuming tags are objects
 };
 
-const truncateDescription = (text: string, maxLength: number): string => {
-  if (text.length > maxLength) {
-    return text.slice(0, maxLength) + "...";
+const truncateDescription = (text: string | undefined, maxLength: number): string => {
+  if (!text) {
+    return ""; // Return an empty string or a placeholder if `text` is undefined/null
   }
-  return text;
+  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 };
 
 
@@ -37,11 +37,12 @@ const BlogPage: React.FC<BlogPageProps> = ({ data }) => {
       {data.map((blog) => (
         <div key={blog.id} onClick={() => handleBlogClick(blog.id.toString())}>
           <BlogPreview
-            title={blog.title} // Default title
-            description={truncateDescription(blog.description, 50)} // Truncate the description blog.description } // Default description
-            author={blog.author.firstName + " " + blog.author.lastName}
+            title={blog.title || "Untitled"}
+            description={truncateDescription(blog.description, 50) || "No description provided"}
+            author={blog.author ? `${blog.author.firstName} ${blog.author.lastName}` : "Unknown author"}
             tags={blog.tags?.map((tag) => tag.name) || []} // Map tag objects to their names
           />
+        
         </div>
       ))}
     </Layout>

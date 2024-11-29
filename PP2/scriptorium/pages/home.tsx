@@ -39,6 +39,7 @@ const HomePage = () => {
     
     const blogDropdownState = dropdownStates.find((state) => state.id === "blogDropdown");
     const searchDropdownState = dropdownStates.find((state) => state.id === "searchdropdown");
+    const [currentContent, setCurrentContent] = useState<JSX.Element | null>(null);
 
 
     const [paging, setPaging] = useState<{
@@ -52,7 +53,7 @@ const HomePage = () => {
   
     const fetchResults = async (page = 1) => {
       setLoading(true);
-      setSearchResults([]); // Clear existing results before fetching
+      setSearchResults([]);
 
   
       let url = "";
@@ -146,34 +147,47 @@ const fetchPage = (direction: "next" | "previous") => {
   fetchResults(page); // Pass the page number to fetch results
 };
 
+ // Update content dynamically based on API response
+useEffect(() => {
+  // Update content dynamically based on API response
+  if (loading || !blogDropdownState?.selectedLabel) {
+    console.log("Loading content or no dropdown selected.");
+    setCurrentContent(<div className="text-gray-500 text-center mt-4">Loading...</div>);
+    return;
+  }
 
-  const renderContent = () => {
-    if (loading) {
-      return <div className="text-gray-500 text-center mt-4">Loading...</div>;
-    }
-  
-    if (!searchResults || searchResults.length === 0) {
-      return <div className="text-gray-500 text-center mt-4">No results found.</div>;
-    }
-  
- // Ensure the dropdown state matches the rendered content
+  if (!searchResults || searchResults.length === 0) {
+    console.log("No results found.");
+    setCurrentContent(<div className="text-gray-500 text-center mt-4">No results found.</div>);
+    return;
+  }
+
+  console.log("Populating content with search results:", searchResults);
+
   switch (blogDropdownState?.selectedLabel) {
     case "Blogs":
-      return blogDropdownState?.selectedLabel === "Blogs" ? (
-        <BlogPage data={searchResults} />
-      ) : null;
+      setCurrentContent(<BlogPage data={searchResults} />);
+      break;
     case "Comments":
-      return blogDropdownState?.selectedLabel === "Comments" ? (
-        <CommentPage data={searchResults} />
-      ) : null;
+      setCurrentContent(<CommentPage data={searchResults} />);
+      break;
     case "Templates":
-      return blogDropdownState?.selectedLabel === "Templates" ? (
-        <TemplatePage data={searchResults} />
-      ) : null;
+      setCurrentContent(<TemplatePage data={searchResults} />);
+      break;
     default:
-      return null;
+      setCurrentContent(null);
+      break;
   }
-};
+}, [blogDropdownState?.selectedLabel, searchResults, loading]);
+
+// Trigger API fetch on dropdown change
+useEffect(() => {
+  if (blogDropdownState?.selectedLabel) {
+    fetchResults(1);
+  }
+}, [blogDropdownState?.selectedLabel, searchQuery, selectedFilter]);
+
+
 
   const updateQuery = (query: string) => {
     console.log("Query changed to:", query);
@@ -243,43 +257,14 @@ const fetchPage = (direction: "next" | "previous") => {
           onClick={() => fetchPage("next")}
           label="Next"
         />
+        
 
       </div>
-      
-        
 
-        {/* <BlogPage></BlogPage> */}
-        {/* <CommentPage></CommentPage> */}
-        {/* <TemplatePage></TemplatePage> */}
-
-        {renderContent()}
-        
-        {/* <div className="flex-auto flex items-center justify-center -my-[2.5%]">
-            
-            
-            
-            <div className="flex flex-col bg-white w-[90%] h-[90%] shadow-lg px-10 rounded-lg">
-                {login ? (
-                    <h1 className="text-3xl font-mono py-10">Hello { user.firstName }!</h1>
-                ) : (
-                    <h1 className="text-3xl font-mono py-10">Hello!</h1>
-                )}
-                
-            </div>
-        </div> */}
-        
-        {/* <PageDropDown items={[
-        { label: "Home", link: "/home" },
-        { label: "Code", link: "/codeEditor" },
-        { label: "Templates", link: "/templates" }
-        ]} /> */}
-
-        {/* <div className="flex flex-row px-16 py-3 space-x-20 font-mono text-sm font-bold text-gray-500">
-        <button className="px-4 py-2 rounded-full hover:bg-blue-200 transition ">Blogs <span className="inline-block -translate-y-0.5">⌄</span> </button>
-        <button className="px-4 py-2 rounded-full hover:bg-blue-200 transition ">Sort by <span className="inline-block -translate-y-0.5">⌄</span></button>
-        </div> */}
-
-
+      <div> 
+        {currentContent}
+      </div>
+    
 
     </div>
     </SearchProvider>

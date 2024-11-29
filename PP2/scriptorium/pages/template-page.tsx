@@ -1,80 +1,47 @@
 import React from "react";
-import Layout from "@/components/layout"; // Adjust path as needed
-import BlogPreview from "@/components/blogPreview"; // Adjust path as needed
-import { useRouter } from "next/router";
-import { SearchProvider } from "@/context/SearchContext";
+import Layout from "@/components/layout";
+import BlogPreview from "@/components/blogPreview";
 
-type Template = {
+const truncateDescription = (text: string, maxLength: number): string => {
+  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+};
+
+interface Template {
   id: number;
   title: string;
   description: string;
   language: string;
-  owner: { firstName: string; lastName: string } | null; // Adjusting for possible undefined
-  tags: { id: number; name: string }[]; // Adjusting for possible undefined
-};
-
-interface TemplatePageProps {
-  data: Template[] | undefined; // Expecting an array of templates as props or undefined
+  owner: { firstName: string; lastName: string } | null;
+  tags: { name: string }[]; // Assuming tags have a `name` property
 }
 
-const truncateDescription = (text: string, maxLength: number): string => {
-  if (text.length > maxLength) {
-    return text.slice(0, maxLength) + "...";
-  }
-  return text;
-};
+interface TemplatePageProps {
+  data: Template[]; // Expecting an array of templates
+}
 
 const TemplatePage: React.FC<TemplatePageProps> = ({ data }) => {
-  const router = useRouter();
-
-  // Check if data is undefined or has any invalid templates
-  if (
-    !data ||
-    data.length === 0 ||
-    data.some(
-      (template) =>
-        !template.id ||
-        !template.title ||
-        !template.description ||
-        !template.language ||
-        !template.owner?.firstName ||
-        !template.owner?.lastName ||
-        !template.tags
-    )
-  ) {
-    return (
-      <Layout>
-        <div className="text-gray-500 text-center mt-4">Loading...</div>
-      </Layout>
-    );
-  }
-
-  const handleBlogClick = (id: string) => {
-    router.push(`/template/${id}`); // Navigate to the template page with the template's ID
-  };
-
   return (
     <Layout>
-      <SearchProvider>
-        {data.map((template, index) => (
-          <div key={template.id} onClick={() => handleBlogClick(template.id.toString())}>
-            <BlogPreview
-              key={index}
-              title={template.title}
-              description={truncateDescription(template.description, 50)}
-              author={
-                template.owner
-                  ? `${template.owner.firstName} ${template.owner.lastName}`
-                  : "Unknown Author" // Fallback if author is null
-              }
-              tags={template.tags?.map((tag) => tag.name) || []} // Map tag objects to their names
-              language={template.language}
-            />
-          </div>
-        ))}
-      </SearchProvider>
+
+      {data.map((template) => (
+        <div key={template.id} className="p-4">
+          <BlogPreview
+            title={template.title}
+            description={truncateDescription(template.description || "No description", 50)}
+            author={
+              template.owner
+                ? `${template.owner.firstName} ${template.owner.lastName}`
+                : "Unknown Author"
+            }
+            tags={template.tags?.map((tag) => tag.name) || []}
+            language={template.language}
+          />
+        </div>
+      ))}
     </Layout>
   );
 };
+
+
 
 export default TemplatePage;

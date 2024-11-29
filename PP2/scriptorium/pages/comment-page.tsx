@@ -17,11 +17,11 @@ interface CommentPageProps {
   data: Comment[]; // Expecting an array of blogs as props
 }
 
-const truncateDescription = (text: string, maxLength: number): string => {
-  if (text.length > maxLength) {
-    return text.slice(0, maxLength) + "...";
+const truncateDescription = (text: string | undefined, maxLength: number): string => {
+  if (!text) {
+    return ""; // Return an empty string or a placeholder if `text` is undefined/null
   }
-  return text;
+  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 };
 
 
@@ -46,10 +46,14 @@ const CommentPage: React.FC<CommentPageProps> = ({ data }) => {
             <div key={comment.blogId} onClick={() => handleBlogClick(comment.blogId.toString())}>
               <CommentPreview
               key={index}
-              author={comment.author.firstName + " " + comment.author.lastName}
+              author=
+                {comment.author
+                  ? `${comment.author.firstName} ${comment.author.lastName}`
+                  : "Unknown author"}
+            
               description={truncateDescription(comment.description, 50)} // Truncate the descriptioncomment.description}
-              upvotes={comment.upvotes.toString()}
-              downvotes={comment.downvotes.toString()}
+              upvotes={(comment.upvotes ?? 0).toString()}
+              downvotes={(comment.downvotes  ?? 0).toString()}
             />
             </div>
            
