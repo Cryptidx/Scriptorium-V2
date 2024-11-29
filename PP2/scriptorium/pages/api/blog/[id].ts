@@ -196,6 +196,15 @@ async function handlerGet(req:BlogRequestID, res:BlogResponseID){
                     select: {
                         id: true,
                         title: true, // Include only the template ID and title
+                        language: true,
+                        explanation: true,
+                        owner: {
+                            select: {
+                                firstName: true,
+                                lastName: true
+                            }
+                        },
+                        tags: true
                     },
                 },
                 tags: {
