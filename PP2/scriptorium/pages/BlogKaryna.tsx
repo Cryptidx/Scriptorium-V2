@@ -60,7 +60,7 @@ const BlogPage = () => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
-        blogId={selectedBlogId} // Pass blogId for editing
+        //blogId={selectedBlogId} // Pass blogId for editing
       />
     </div>
   );

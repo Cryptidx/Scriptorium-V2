@@ -12,7 +12,9 @@ import ReportCreationModal from "@/components/modals/ReportCreationModal";
 import CommentSection from "@/components/comment-section";
 import { apiCall } from "@/utils/auth-api-w-refresh";
 import { useUser } from "@/context/userContextHeader";
-
+import BlogPreview from "@/components/blogPreview";
+import LinkTemplateModal from "@/components/modals/LinkTemplateModal";
+import ReportPopUp from "@/components/reportPopUp";  
 // working version with local stroe 
 
 // interface Blog {
@@ -495,6 +497,42 @@ interface Blog {
 }
 
 const BlogPage: React.FC = () => {
+  const blogs = [
+    {
+      id: "1",
+        title: "Exploring React Patterns",
+        description: "Learn about the latest patterns and practices in React development.",
+        author: "Jane Doe",
+        tags: ["python"],
+        language: "python"
+      },
+      {
+        id: "1",
+        title: "Mastering TypeScript",
+        description: "A guide to becoming proficient in TypeScript for modern web development.",
+        author: "John Smith",
+        tags: ["python", "javascript"],
+        language: "python"
+      },
+      {
+        id: "1",
+        title: "CSS for the Future",
+        description: "Discover advanced CSS techniques and upcoming features.",
+        author: "Alice Johnson",
+        tags: ["python", "javascript"],
+        language: "python"
+      },
+  
+      {
+        id: "1",
+        title: "CSS for the Future",
+        description: "Discover advanced CSS techniques and upcoming features.",
+        author: "Alice Johnson",
+        tags: ["python", "javascript", "python", "javascript","python", "javascript"],
+        language: "python"
+      },
+  ];
+
   const router = useRouter();
   const { id } = router.query;
 
@@ -503,6 +541,8 @@ const BlogPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportTitle, setReportTitle] = useState("");
+  const [showTempLinkModal, setShowTempLinkModal] = useState(false);
+  const [showReports, setShowReports] = useState(false);
   const { user } = useUser();
 
   const flagged = blog?.flagged;
@@ -511,6 +551,10 @@ const BlogPage: React.FC = () => {
     setReportTitle(title); // Set the title of the item being reported
     setShowReportModal(true); // Show the modal
   };
+
+  const handleTempLinkSubmit = () => {
+    router.reload();
+  }
 
   const handleReportSubmit = () => {
     console.log("Report Submitted");
@@ -610,7 +654,8 @@ const BlogPage: React.FC = () => {
                 You've been reported
                 </div>
                 <div>
-                    <button className="px-2 py-2 bg-red-500 text-white rounded-lg">
+                    <button className="px-2 py-2 bg-red-500 text-white rounded-lg"
+                    onClick={() => setShowReports(true)}>
                     Why?
                     </button>
                     
@@ -701,6 +746,47 @@ const BlogPage: React.FC = () => {
             />
           </div>
         </div>
+
+        
+        <h2 className="text-3xl font-bold ml-[10px]">Linked Templates:</h2>
+        <div className={`mt-6 flex flex-wrap justify-around flex-grow  border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
+            {blogs.map((blog, index) => (
+            <BlogPreview
+                key={index}
+                language={blog.language}
+                title={blog.title}
+                description={blog.description}
+                author={blog.author}
+                tags={blog.tags}
+                blogId={id as string}
+                tempId={blog.id}
+            />
+            ))}
+        </div>
+        {user && (user.id === blog.authorId) && <>
+        <button
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        onClick={() => setShowTempLinkModal(true)}
+      >
+        Link Template
+      </button>
+
+      <LinkTemplateModal
+        isOpen={showTempLinkModal}
+        onClose={() => setShowTempLinkModal(false)}
+        onSubmit={handleTempLinkSubmit}
+        blogId={Number(id as string)}
+      />
+
+        </>
+      }
+
+      <ReportPopUp
+        isOpen={showReports}
+        onClose={() => setShowReports(false)}
+        blogId={Number(id as string)}
+        type={"blog"}
+      />
   
         <hr className="w-[95%] border-t-2 border-gray-300 my-4 mx-auto"></hr>
   
