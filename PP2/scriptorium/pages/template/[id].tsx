@@ -8,6 +8,7 @@ import { defaultLocalStorage } from "@/utils/default";
 import { useRouter } from "next/router";
 import { User } from "@/types/user";
 import TemplateCreationModal from "@/components/modals/TemplateModal";
+import { apiCallText } from "@/utils/auth-api-w-refresh-text";
 
 interface TempApi {
   message: string;
@@ -149,9 +150,40 @@ const TemplateEditor: React.FC = () => {
     setLanguage(newLanguage);
   };
 
+  const handleDelete = () => {
+    if (confirm("Are you sure you want to delete this template?")) {
+        try {
+            apiCallText(`/api/template/${tempId}`, {
+                method: "DELETE",
+                headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+            }).catch(() => {
+                alert("You must be logged in to complete this");
+                router.push("/");
+            })
+    
+            router.push("/home");
+        } catch (error) {
+            router.push("/");
+        }
+        
+    }
+  };
+
   return (
-    <div className="h-screen flex flex-col dark:bg-gray-900">
-  
+    <div className="h-screen flex flex-col dark:bg-gray-900 relative">
+      {/* Delete Button */}
+
+      {tempId !== -1 && authorId === userId && 
+        <button
+            onClick={handleDelete}
+            className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 shadow-md"
+        >
+            Delete
+        </button>
+      }
+
       {/* Main Content */}
       <div className="flex items-center justify-center flex-1">
 

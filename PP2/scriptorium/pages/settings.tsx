@@ -10,10 +10,27 @@ import BlogPreview from "@/components/blogPreview";
 import ReportPreview from "@/components/reportPreview";
 import ReportDropdown from "@/components/reportsPreview";
 import UserEditModal from "@/components/modals/UserModal";
+import { apiCallText } from "@/utils/auth-api-w-refresh-text";
 
 interface UserApi {
     message: string;
     user: User;
+}
+
+interface TempsApi {
+    message: string;
+    templates: Template[];
+}
+
+interface Reports {
+    id: number;
+    title: string;
+    description: string;
+    flagged: boolean;
+    author: {firstName: string, lastName: string};
+    reportCount: number,
+    explanations: string[]
+    tags: Tag[]
 }
 
 const Settings = () => {
@@ -27,6 +44,8 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [wrapped, setWrapped] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [userTemps, setUserTemps] = useState<Template[]>([]);
+  const [blogReports, setBlogReports] = useState<Reports[]>([]);
 
   const blogs = [
     {
@@ -125,49 +144,17 @@ const Settings = () => {
 
     useEffect(() => {
         defaultLocalStorage();
-
-        const validateAccess = async () => {
-            try {
-                if (localStorage.getItem("accessToken") === "" || localStorage.getItem("refreshToken") === "") {
-                    router.push("/");
-                    return;
-                }
-      
-                // Check authentication using API call
-                const response = await apiCall("/api/auth/is-auth", {
-                    method: "POST",
-                });
-      
-                console.log(response);
-      
-      
-                if (!response.success) {
-                    router.push("/");
-                    return;
-                }
-
-                return response;
-    
-            } catch (err: any) {
-                console.error("Error validating access:", err.message);
-                router.push("/");
-            }
-        };
-
-        validateAccess();
     
         try {
-            fetch("api/users/user-info", {
+            apiCallText("/api/users/user-info", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ` + localStorage.getItem("accessToken"), // Ensure this token is valid
                 }
             }).then((response) => {
-                if (!response.ok){
-                    return;
-                }
-                return response.json();
-            }).then((data: UserApi) => {
+                
+                const data = JSON.parse(response);
+
                 if (!data || !data.user) {
                     return;
                 }
@@ -178,22 +165,85 @@ const Settings = () => {
                 setLastName(data.user.lastName);
                 setPhoneNumber(data.user.phoneNumber || "");
                 setRole(data.user.role);
-            });
 
-            setLoading(false);
+                fetch("/api/template?onlyMine=true", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ` + localStorage.getItem("accessToken"),
+                    }
+                }).then((response) => {
+                    if (!response.ok) {
+                        return;
+                    }
 
-        } catch (error) {
-            return;
-        }
+                    return response.json()
+                }).then((data: TempsApi) => {
+                    if (!data || !data.templates) return;
+
+                    setUserTemps(data.templates);
+                })
+            }).catch(() => router.push("/"));
+
+    } catch (error) {
+        return;
+    }
+        
     }, []);
 
-const avatarUpdate = () => {
-    alert("Update Avatar");
-  };
-
-  const handleOutput = () => {
-    alert("Update User");
-  };
+    useEffect(() => {
+        const fetchBlogReports = async () => {
+          try {
+            const response = await apiCallText(
+              "/api/reports/report?page=1&pageSize=2&contentType=BLOG",
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+              }
+            );
+      
+            const data = JSON.parse(response);
+            if (!data || !data.data) return;
+      
+            const objects = await Promise.all(
+              data.data.map(async (report: Reports) => {
+                const object = {
+                  id: report.id,
+                  title: report.title,
+                  description: report.description,
+                  flagged: report.flagged,
+                  author: { firstName: "", lastName: "" },
+                  reportCount: report.reportCount,
+                  explanations: report.explanations,
+                  tags: [] as Tag[],
+                };
+      
+                const blogResponse = await apiCallText(`/api/blog/${report.id}`, {
+                  method: "GET",
+                });
+      
+                const blogData = JSON.parse(blogResponse);
+                object.author = {
+                  firstName: blogData.blog.author.firstName,
+                  lastName: blogData.blog.author.lastName,
+                };
+                object.tags = blogData.blog.tags as Tag[];
+      
+                return object;
+              })
+            );
+      
+            setBlogReports(objects);
+            setLoading(false);
+          } catch (error) {
+            console.error("Error fetching blog reports:", error);
+            router.push("/");
+          }
+        };
+      
+        fetchBlogReports();
+      }, [router]);
 
   const handleUserSubmit = (data: {
     firstName: string;
@@ -230,12 +280,6 @@ const avatarUpdate = () => {
                     className={`${wrapped ? 'w-64 h-64' : 'w-96 h-96'} rounded-full object-cover border-8 border-gray-900`}
                   />
                 </div>
-                <button
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                  onClick={() => alert('Change Avatar')}
-                >
-                  Change Profile Photo
-                </button>
               </div>
 
               <div className={`flex flex-col ${wrapped ? '' : 'flex-grow'} justify-center`}>
@@ -274,14 +318,14 @@ const avatarUpdate = () => {
                         <h2 className={`${wrapped ? 'text-xl' : 'text-2xl'} mt-3 font-normal`}>User has no templates</h2>
                         ) : (
                         <div className={`mt-6 flex flex-col overflow-y-auto max-h-[300px] min-w-[100px] ${wrapped ? '' : 'flex-col overflow-y-auto max-h-[300px]'} border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>
-                            {blogs.map((blog, index) => (
+                            {userTemps.map((temps, index) => (
                             <BlogPreview
                                 key={index}
-                                title={blog.title}
-                                description={blog.description}
-                                author={blog.author}
-                                tags={blog.tags}
-                                language={blog.language}
+                                title={temps.title}
+                                description={temps.explanation}
+                                author={temps.owner.firstName + " " + temps.owner.lastName}
+                                tags={temps.tags?.map((tag) => tag.name) || []}
+                                language={temps.language}
                             />
                             ))}
                         </div>
@@ -289,7 +333,7 @@ const avatarUpdate = () => {
                     </>
                     ) : ( <>
                             <ReportDropdown
-                                blogReports={reports} // Array of blog report objects
+                                blogReports={blogReports} // Array of blog report objects
                                 commentReports={[]} // Array of comment report objects
                                 wrapped={wrapped} // Set this to true or false based on your layout needs
                             />
