@@ -57,17 +57,18 @@ const HomePage = () => {
 
   
       let url = "";
+      const filter = searchDropdownState?.selectedLabel;
       // Build URL based on selected content type and filters
       if (blogDropdownState?.selectedLabel === "Blogs") {
-        if(searchQuery && selectedFilter){
+        if(searchQuery && filter!== null){
           url = `/api/blog?page=${page}`;
-          if(selectedFilter == "Title" ){
+          if(filter == "Title" ){
             url += `&title=${encodeURIComponent(searchQuery)}`
-          } else if (selectedFilter == "Tags"){
+          } else if (filter == "Tags"){
             url += `&tags=${encodeURIComponent(searchQuery)}`
-          } else if(selectedFilter == "Content"){
+          } else if(filter == "Content"){
             url += `&content=${encodeURIComponent(searchQuery)}`
-          } else if (selectedFilter == "Template"){
+          } else if (filter == "Template"){
             url += `&templateTitle=${encodeURIComponent(searchQuery)}`
           }
         }
@@ -77,13 +78,13 @@ const HomePage = () => {
       } else if (blogDropdownState?.selectedLabel === "Templates") {
         console.log("seeing templates");
         url = `/api/template?page=${page}`;
-        if(searchQuery && selectedFilter){
+        if(searchQuery && filter){
           url = `/api/template?page=${page}`;
-          if(selectedFilter == "Title" ){
+          if(filter == "Title" ){
             url += `&title=${encodeURIComponent(searchQuery)}`
-          } else if (selectedFilter == "Tags"){
+          } else if (filter == "Tags"){
             url += `&tags=${encodeURIComponent(searchQuery)}`
-          } else if(selectedFilter == "Content"){
+          } else if(filter == "Content"){
             url += `&explanation=${encodeURIComponent(searchQuery)}`
           } 
         
@@ -137,6 +138,7 @@ const HomePage = () => {
 useEffect(() => {
   if (!blogDropdownState?.selectedLabel) return;
   fetchResults(1); // Fetch data when `searchQuery` changes
+  console.log(searchDropdownState)
 }, [searchQuery, selectedFilter, blogDropdownState?.selectedLabel]);
 
 
@@ -183,6 +185,7 @@ useEffect(() => {
 // Trigger API fetch on dropdown change
 useEffect(() => {
   if (blogDropdownState?.selectedLabel) {
+    console.log(selectedFilter, searchQuery);
     fetchResults(1);
   }
 }, [blogDropdownState?.selectedLabel, searchQuery, selectedFilter]);

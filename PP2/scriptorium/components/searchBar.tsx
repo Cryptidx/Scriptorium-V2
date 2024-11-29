@@ -46,29 +46,33 @@ const SearchBar: React.FC<SearchBar> = ({update, filter}) => {
 
   if (blogDropdownState?.selectedLabel === "Blogs") {
     itemsView = blogItems;
-    if (searchDropdownState?.selectedLabel === "Title" || searchDropdownState?.selectedLabel === "Content") {
-      placeholder = "Search blogs by title or content";
-    } else if (searchDropdownState?.selectedLabel === "Tags") {
+    if (searchDropdownState?.selectedLabel === "Title") {
+      placeholder = "Search blogs by title";
+    } else if (searchDropdownState?.selectedLabel === "Content") {
+      placeholder = "Search blogs by content";
+    }else if (searchDropdownState?.selectedLabel === "Tags") {
       placeholder = "Search blogs by tags, comma-separated";
     } else if (searchDropdownState?.selectedLabel === "Template") {
       placeholder = "Search blogs by template title";
     }
   } else if (blogDropdownState?.selectedLabel === "Comments") {
-    placeholder = "Search comments by content";
+    placeholder = "View comments by top rated";
   } else if (blogDropdownState?.selectedLabel === "Templates") {
     itemsView = templateItems;
     if (searchDropdownState?.selectedLabel === "Tags") {
       placeholder = "Search templates by tags, comma-separated";
     } else if (searchDropdownState?.selectedLabel === "Title") {
       placeholder = "Search templates by title";
+    } else if (searchDropdownState?.selectedLabel === "Content") {
+      placeholder = "Search templates by content";
     }
   }
 
   useEffect(() => {
     // Update filter based on dropdown selection
     if (searchDropdownState?.selectedLabel) {
-      setSelectedFilter(searchDropdownState.selectedLabel);
       filter(searchDropdownState.selectedLabel);
+      setSelectedFilter(searchDropdownState.selectedLabel);
 
     }
   }, [searchDropdownState]);
