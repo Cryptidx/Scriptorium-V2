@@ -208,11 +208,12 @@ const BlogPage: React.FC = () => {
                 
             </div>)}
 
-
+        
           <div className="flex justify-center">
             <div className="flex flex-wrap">
             <h1 className="text-3xl font-bold dark:text-white ">{blog.title}</h1>
             </div>
+            
             
           </div>
   

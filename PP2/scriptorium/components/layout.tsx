@@ -19,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title, subtitle, extraContent
         )}
         {extraContent && <div className="mt-4">{extraContent}</div>}
       </div>
-      <div className="px-6 -my-[4%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">{children}</div>
+      <div className="px-6 py-6 -my-[4%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full h-[calc(100%-150px)] overflow-y-auto">{children}</div>
     </div>
   );
 };
