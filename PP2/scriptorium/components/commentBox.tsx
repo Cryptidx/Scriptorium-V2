@@ -87,6 +87,8 @@ import { useUser } from "@/context/userContextHeader";
 import { useRouter } from "next/router";
 import { apiCall } from "@/utils/auth-api-w-refresh";
 import ReportPopUp from "./reportPopUp";
+import ReportCreationModalCom from "./modals/ReportCreationComModal";
+import ReportPopUpCom from "./reportPopUpCom";
 
 interface CommentProps {
   comment: Comment;
@@ -113,9 +115,9 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
   const [hasMoreReplies, setHasMoreReplies] = useState(true);
   const [replyPage, setReplyPage] = useState(1);
   const [replyInputVisible, setReplyInputVisible] = useState(false);
-  const [showReports, setShowReports] = useState(false);
+  const [showReportsCom, setShowReportsCom] = useState(false);
 
-  const [showReportModal, setShowReportModal] = useState(false);
+  const [showReportModalCom, setShowReportModalCom] = useState(false);
   const [reportComment, setReportComment] = useState("");
   const { user } = useUser();
   const router = useRouter();
@@ -124,12 +126,12 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
 
   const handleFlagClick = (title: string) => {
     setReportComment(title); // Set the title of the item being reported
-    setShowReportModal(true); // Show the modal
+    setShowReportModalCom(true); // Show the modal
   };
 
   const handleReportSubmit = () => {
     console.log("Report Submitted");
-    setShowReportModal(false); // Close the modal after submission
+    setShowReportModalCom(false); // Close the modal after submission
   };
 
   const loadReplies = async (parentId:string) => {
@@ -204,7 +206,7 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
                 </div>
                 <div>
                     <button className="px-2  bg-red-500 text-white rounded-lg"
-                    onClick={() => setShowReports(true)}>
+                    onClick={() => setShowReportsCom(true)}>
                     Why?
                     </button>
                     
@@ -248,17 +250,17 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
                   </div>
                 </div>
 
-                <ReportCreationModal
+                <ReportCreationModalCom
                   id={String(comment.id) }
                   type={"COMMENT"}
-                  isOpen={showReportModal}
-                  onClose={() => setShowReportModal(false)}
+                  isOpen={showReportModalCom}
+                  onClose={() => setShowReportModalCom(false)}
                   onSubmit={handleReportSubmit}
                 />
 
-                <ReportPopUp
-                  isOpen={showReports}
-                  onClose={() => setShowReports(false)}
+                <ReportPopUpCom
+                  isOpen={showReportsCom}
+                  onClose={() => setShowReportsCom(false)}
                   blogId={Number(id as string)}
                   type={"comment"}
                 />
