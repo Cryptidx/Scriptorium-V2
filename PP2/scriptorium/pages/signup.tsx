@@ -98,10 +98,10 @@ const SignupPage: React.FC = () => {
 
   return (
     <RedirectIfAuthenticated>
-    <div className="h-screen flex flex-col">
-      <div className="flex-1 flex items-center justify-center py-10">
-        <div className="flex flex-col items-start justify-start bg-white w-[90%] h-[90%] shadow-lg px-10 py-7 rounded-lg">
-          <h4 className="text-center text-xl font-mono pb-3">
+<div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-black dark:text-white">
+<div className="flex-1 flex items-center justify-center py-10">
+      <div className="flex flex-col items-start justify-start bg-white dark:bg-gray-800 w-[90%] h-[90%] shadow-lg px-10 py-7 rounded-lg">
+      <h4 className="text-center text-xl font-mono pb-3">
             Create a <i>shiny new</i> Scriptorium account
           </h4>
 
@@ -115,7 +115,7 @@ const SignupPage: React.FC = () => {
                 placeholder="First name"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-[50%] p-2 border border-gray-300 rounded-md"
+                className="w-[50%] p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-black dark:text-white"
                 required
               />
               <input
@@ -125,7 +125,7 @@ const SignupPage: React.FC = () => {
                 placeholder="Last name"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-[50%] p-2 border border-gray-300 rounded-md"
+                className="w-[50%] p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-black dark:text-white"
                 required
               />
             </div>
@@ -138,7 +138,7 @@ const SignupPage: React.FC = () => {
                 placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
-                className="p-2 w-full border border-gray-300 rounded-md"
+                className="p-2 w-full border border-gray-300  dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-black dark:text-white"
                 required
               />
             </div>
@@ -151,7 +151,7 @@ const SignupPage: React.FC = () => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-[50%] p-2 border border-gray-300 rounded-md"
+                className="w-[50%] p-2 border border-gray-300  dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-black dark:text-white"
                 required
               />
               <input
@@ -161,7 +161,7 @@ const SignupPage: React.FC = () => {
                 placeholder="Repeat Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-[50%] p-2 border border-gray-300 rounded-md"
+                className="w-[50%] p-2 border border-gray-300  dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-black dark:text-white"
                 required
               />
             </div>
@@ -174,18 +174,18 @@ const SignupPage: React.FC = () => {
                 placeholder="Phone Number"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                className="w-[49%] p-2 border border-gray-300 rounded-md"
+                className="w-[49%] p-2 border border-gray-300  dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-black dark:text-white"
                 required
               />
             </div>
 
-            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+            {errorMessage && <p className="text-red-500 dark:text-red-400">{errorMessage}</p>}
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-[30%] bg-[#132D5F] text-white p-2 rounded-md mt-4 hover:bg-[#0f2440] transition"
-            >
+              className="w-[30%] bg-[#132D5F] dark:bg-[#1E3A8A] text-white p-2 rounded-md mt-4 hover:bg-[#0f2440] dark:hover:bg-[#0C2A5A] transition"
+              >
               {loading ? "Signing up..." : "Next"}
             </button>
           </form>
