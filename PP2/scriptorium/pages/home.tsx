@@ -205,11 +205,11 @@ useEffect(() => {
 
     return (
       <SearchProvider>
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col dark:bg-gray-900">
   
   <div className="flex flex-row items px-16 py-3 space-x-5 font-mono text-sm font-bold text-gray-500 mb-6">
 
-<button className="flex flex-inline space-x-2 px-4 py-2 rounded-full hover:bg-blue-200 transition ">
+<button className="flex flex-inline space-x-2 px-4 py-2 rounded-full hover:bg-blue-200 dark:hover:bg-gray-700 transition ">
 
 
 <PageDropDown
@@ -222,7 +222,7 @@ useEffect(() => {
   ]}
   updateTriggerText={true} // Enable trigger text update
 />
-<span className="inline-block -translate-y-0.5">⌄</span>
+<span className=" inline-block -translate-y-0.5">⌄</span>
 </button>
 
         {/* Dropdown for Sorting */}

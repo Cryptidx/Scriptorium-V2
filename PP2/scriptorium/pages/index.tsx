@@ -67,12 +67,13 @@ const MainPage = () => {
 
   return (
     <RedirectIfAuthenticated>
-    <div className="h-screen flex flex-col">
-      <DropdownProvider>
+<div className="h-screen flex flex-col dark:bg-gray-900 text-black dark:text-white">
+<DropdownProvider>
       <div className="flex-1 flex items-center justify-center py-10">
-        <div className="flex flex-col items-center justify-center bg-white w-[90%] h-[90%] shadow-lg px-10 rounded-lg">
-          <h1 className="text-center text-5xl font-mono pb-3">Scriptorium</h1>
-          <h2 className="text-center text-m font-mono">the global code compiler</h2>
+      <div className="flex flex-col items-center justify-center bg-white dark:bg-gray-800 w-[90%] h-[90%] shadow-lg px-10 rounded-lg">
+      <h1 className="text-center text-5xl font-mono pb-3 text-black dark:text-white">Scriptorium</h1>
+        <h2 className="text-center text-m font-mono text-gray-700 dark:text-gray-300">
+        the global code compiler</h2>
 
           <form onSubmit={handleLogin} className="w-full max-w-md space-y-6">
             <div className="flex flex-col space-y-2">
@@ -83,7 +84,7 @@ const MainPage = () => {
                 name="email"
                 value={email}
                 onChange={(e) => setemail(e.target.value)}
-                className="p-2 border border-gray-300 rounded-md"
+                className="p-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-black dark:text-white rounded-md"
                 required
               />
             </div>
@@ -96,7 +97,7 @@ const MainPage = () => {
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="p-2 border border-gray-300 rounded-md"
+                className="p-2 border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 text-black dark:text-white rounded-md"
                 required
               />
             </div>
@@ -107,12 +108,12 @@ const MainPage = () => {
             )}
 
             {errorMessage && (
-              <p className="text-red-500 text-center">{errorMessage}</p>
+              <p className="text-red-500 dark:text-red-400 text-center">{errorMessage}</p>
             )}
 
             <button
               type="submit"
-              className="w-full bg-[#132D5F] text-white p-2 rounded-md mt-4 hover:bg-[#0f2440] transition"
+              className="w-full bg-[#132D5F] dark:bg-[#1E3A8A] text-white p-2 rounded-md mt-4 hover:bg-[#0f2440] dark:hover:bg-[#0C2A5A] transition"
             >
               Log In
             </button>
@@ -120,7 +121,7 @@ const MainPage = () => {
           
           
           <p className="my-[2%]"> Don't have an account?  
-            <Link href="/signup"> <span className="text-blue-[#132D50] underline">Create a Scriptorium account</span></Link>
+            <Link href="/signup"> <span className="text-blue-[#132D50]  dark:text-blue-400 underline">Create a Scriptorium account</span></Link>
             </p>
 
         </div>

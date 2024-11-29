@@ -4,9 +4,13 @@
 
 :root {
   --background: #DEE8FF; /* Light mode background */
+  --foreground: #000000; /* Light mode text color */
 }
 
-
+[data-theme="dark"] {
+  --background: #1E293B; /* Dark mode background */
+  --foreground: #F1F5F9; /* Dark mode text color */
+}
 
 body {
   color: var(--foreground);

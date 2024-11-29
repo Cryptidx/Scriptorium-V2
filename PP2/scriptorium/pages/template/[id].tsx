@@ -178,7 +178,7 @@ const TemplateEditor: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col dark:bg-gray-900 relative">
+  <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900 relative">
       {/* Delete Button */}
 
       {tempId !== -1 && authorId === userId && 
@@ -193,7 +193,7 @@ const TemplateEditor: React.FC = () => {
       {/* Main Content */}
       <div className="flex items-center justify-center flex-1">
 
-        <div className="bg-white dark:bg-gray-800 w-[90%] h-[80vh] shadow-lg px-10 py-6 rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 w-[90%] h-[80vh] shadow-lg px-10 py-6 rounded-lg overflow-hidden">
         {  !router.query.id ?
                 (<><div className="flex justify-center mb-10">
                 <img className="h-10 w-10 item-center" src="loading.gif"></img>
@@ -242,20 +242,20 @@ const TemplateEditor: React.FC = () => {
                     id="user-input"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg w-full resize-none overflow-auto h-[150px]"
+                    className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg w-full resize-none overflow-auto h-[150px] bg-white dark:bg-gray-900 text-black dark:text-white"
                     placeholder="Enter your input here"
                   ></textarea>
   
   
                 {/* Output Section */}
-                <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2">
+                <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2 bg-white dark:bg-gray-900 text-black dark:text-white">
                 <OutputComponent stdout={output} stderr={error} />
                 </div>
       
                 {/* Template Info Section */}
                 {tempId !== -1 && <div
-                  className={`mt-4 lg:mt-0 flex flex-col flex-[0.7] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}
-                >
+  className={`mt-4 lg:mt-0 flex flex-col flex-[0.7] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2 bg-white dark:bg-gray-900 text-black dark:text-white`}
+  >
                   <TemplateInfo
                     author={authorName}
                     forked={fork}
