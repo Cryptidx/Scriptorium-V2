@@ -109,7 +109,7 @@ async function runDocker(command: string, args: string[], stdin: string[]) {
         });
 
         if (crash) {
-            return [-1, "", "Code took too long"];
+            stderr = "Code took too long";
         }
 
         // return output
@@ -150,7 +150,7 @@ async function fileRun(lang: string, code: string, inputs = []) {
             '-i', // allow for input
             '-v', // mounts file
             `${codeFile}:/app/code` + fileExtension, // file to mount
-            '--memory=10m', // sets maximum memory usage
+            '--memory=512m', // sets maximum memory usage
             '--stop-timeout', '10', // kills program after 30 seconds
             dockerImage // docker image to create container of
         ];
