@@ -71,7 +71,7 @@ const TemplateEditor: React.FC = () => {
       }
 
       setAuthorId(data.template.ownerId);
-      setAuthorName(data.template.name);
+      setAuthorName(data.template.owner.firstName + " " + data.template.owner.lastName)
       setTitle(data.template.title);
       setCode(data.template.code);
       setLanguage(data.template.language);

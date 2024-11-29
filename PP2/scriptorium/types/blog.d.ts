@@ -8,7 +8,7 @@ export interface BlogRequest extends NextApiRequest, AuthRequest {
     title?: string;
     content?: string;
     tags?: string; // Comma-separated tags for GET
-    templateIds?: string; // Comma-separated template IDs for GET
+    templateTitle?: string; // Comma-separated template IDs for GET
     page?: string; // Pagination
     limit?: string; // Pagination limit
   };

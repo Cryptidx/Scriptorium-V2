@@ -93,7 +93,7 @@ async function handlerGet(req:BlogRequest,res:BlogResponse){
         return res.status(405).json({error: "method not allowed"});
     }
 
-    const { title, content, tags, templateIds, page = "1", limit = "10" } = req.query || {};
+    const { title, content, tags, templateTitle, page = "1", limit = "10" } = req.query || {};
 
     if(parseInt(limit) > 20){
         return res.status(400).json({ error: "limit must be less than 20, limit too high." });
@@ -102,20 +102,16 @@ async function handlerGet(req:BlogRequest,res:BlogResponse){
     // Check that title, content, and templateId are either undefined or strings
     if ((title && typeof title !== 'string') || 
     (content && typeof content !== 'string') || 
-    (templateIds && typeof templateIds !== 'string')) {
-        return res.status(400).json({ error: "Invalid input. 'title', 'content', and 'templateId' must be strings if provided." });
+    (templateTitle && typeof templateTitle !== 'string')) {
+        return res.status(400).json({ error: "Invalid input. 'title', 'content', and 'templateNames' must be strings if provided." });
     }
 
     // split all strings in tags query 
     const parsedTags = tags ? tags.split(',').map(tag => tag.trim()).filter(Boolean) : [];
 
-    // Parse and sanitize `templateIds` as an array of integers
-    const parsedTemplateIds = templateIds 
-    ? templateIds.split(",").map(id => parseInt(id.trim())).filter(id => !isNaN(id)) : [];
-
     const filters: { AND: Prisma.BlogWhereInput[] } = { AND: [] };
-    if (title) filters.AND.push({ title: { contains: title, mode: "insensitive", } as Prisma.StringFilter, });
-    if (content) filters.AND.push({ description: { contains: content, mode: "insensitive", } as Prisma.StringFilter,});
+    if (title) filters.AND.push({ title: { contains: title.toLocaleLowerCase(), } as Prisma.StringFilter, });
+    if (content) filters.AND.push({ description: { contains: content.toLocaleLowerCase(), } as Prisma.StringFilter,});
     
     if (parsedTags && parsedTags.length > 0) {
         filters.AND.push({
@@ -127,14 +123,14 @@ async function handlerGet(req:BlogRequest,res:BlogResponse){
         });
     }
 
-    if (parsedTemplateIds.length > 0) {
+    if (templateTitle !== undefined && templateTitle != "") {
         filters.AND.push({
             templates: {
-                some: {
-                    id: { in: parsedTemplateIds },
-                },
+              some: {
+                title: { contains: templateTitle }, // Match template names
+              },
             },
-        });
+          });
     }
     //if (templateId) filters.AND.push({ templates: { some: { id: Number(templateId) } } });
 
@@ -160,21 +156,22 @@ async function handlerGet(req:BlogRequest,res:BlogResponse){
             where: filters,
             skip: (parseInt(page) - 1) * parseInt(limit),
             take: parseInt(limit),
-            include: {  
-                author: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        email: true,
-                        role: true
-                    }
-                },                templates: true,
-                comments: true,
-                tags: true,
+            include: {
+              author: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                  role: true,
+                },
+              },
+              templates: true,
+              comments: true,
+              tags: true,
             },
-        });
-
+          });
+      
         console.log("blogs:", blogs);
 
         // If user is authenticated, fetch reports for their flagged blogs

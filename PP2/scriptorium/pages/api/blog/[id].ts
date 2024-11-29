@@ -221,7 +221,7 @@ async function handlerGet(req:BlogRequestID, res:BlogResponseID){
 
         // Handle flagged blogs
         if (blog.flagged) {
-            const user = await authMiddleware(req, res, { getFullUser: true });
+            const user = await noErrorAuth(req, res, { getFullUser: true });
 
             if (!user) {
                 return res.status(403).json({ error: "Access denied to this blog." });

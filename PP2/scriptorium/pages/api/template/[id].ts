@@ -185,6 +185,15 @@ async function handlerGet(req: TemplateRequestID, res: TemplateResponseID) {
         const template = await prisma.template.findUnique({
             where: { id: templateId },
             include: {
+                owner: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                      email: true,
+                      role: true,
+                    },
+                  },
                 blogs: {
                     where: {
                         flagged: false, // Filter blogs where flagged is false

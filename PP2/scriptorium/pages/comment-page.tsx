@@ -2,46 +2,30 @@ import React from "react";
 import Layout from "@/components/layout"; // Adjust path as needed
 import CommentPreview from "@/components/commentPreview";
 import { useRouter } from "next/router";
+import { SearchProvider } from "@/context/SearchContext";
 
-const CommentPage: React.FC = () => {
-    const comments = [
-        {
-          id: "1",
-          author: "Jane Doe",
-          description: "This article on React patterns is incredibly insightful. Thanks for sharing!",
-          upvotes: "120",
-          downvotes: "10",
-          createdAt: new Date("2024-01-20T10:30:00Z"),
-          blogId: "1"
-        },
-        {
-          id: "2",
-          author: "John Smith",
-          description: "TypeScript has been a game-changer for my projects. Great read!",
-          upvotes: "95",
-          downvotes: "5",
-          createdAt: new Date("2024-01-21T08:15:00Z"),
-          blogId: "1"
-        },
-        {
-          id: "3",
-          author: "Alice Johnson",
-          description: "The advanced CSS techniques mentioned here are fantastic. Looking forward to trying them!",
-          upvotes: "80",
-          downvotes: "3",
-          createdAt: new Date("2024-01-22T14:00:00Z"),
-          blogId: "2"
-        },
-        {
-          id: "4",
-          author: "Hannah Homeiza",
-          description: "Loved the detailed explanation. Can you provide more examples on using CSS grid effectively?",
-          upvotes: "60",
-          downvotes: "0",
-          createdAt: new Date("2024-01-23T16:45:00Z"),
-          blogId: "2"
-        },
-      ];
+type Comment = {
+  id: number;
+  blogId: number;
+  description: string;
+  author: {firstName: string; lastName: string};
+  upvotes: number;
+  downvotes: number;
+};
+
+interface CommentPageProps {
+  data: Comment[]; // Expecting an array of blogs as props
+}
+
+const truncateDescription = (text: string, maxLength: number): string => {
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + "...";
+  }
+  return text;
+};
+
+
+const CommentPage: React.FC<CommentPageProps> = ({ data }) => {
 
       const router = useRouter();
 
@@ -52,22 +36,26 @@ const CommentPage: React.FC = () => {
       
     return (
       <Layout >
+            <SearchProvider>
+
         {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           
-        </div> */}
+        </div> */} 
        
-        {comments.map((comment, index) => (
-            <div key={comment.blogId} onClick={() => handleBlogClick(comment.blogId)}>
+        {data.map((comment, index) => (
+            <div key={comment.blogId} onClick={() => handleBlogClick(comment.blogId.toString())}>
               <CommentPreview
               key={index}
-              author={comment.author}
-              description={comment.description}
-              upvotes={comment.upvotes}
-              downvotes={comment.downvotes}
+              author={comment.author.firstName + " " + comment.author.lastName}
+              description={truncateDescription(comment.description, 50)} // Truncate the descriptioncomment.description}
+              upvotes={comment.upvotes.toString()}
+              downvotes={comment.downvotes.toString()}
             />
             </div>
            
           ))}
+                </SearchProvider>
+
       </Layout>
     );
   };

@@ -21,7 +21,6 @@ async function handlerCreate(req: TemplateRequest,res: TemplateResponse){
     // possible body requests
     const { forkedFromId, code, language, title, explanation, tags } = req.body || {};
 
-
     // mandatory fields
     if(!code || !language || !title || !explanation){
         return res.status(400).json({ error: "fill in all required fields" });
@@ -61,7 +60,6 @@ async function handlerCreate(req: TemplateRequest,res: TemplateResponse){
         const template = await prisma.template.create({
             data: {
                 ownerId: author.id,
-                name: author.firstName + " " + author.lastName,
                 code,
                 language,
                 title,
@@ -74,6 +72,15 @@ async function handlerCreate(req: TemplateRequest,res: TemplateResponse){
             },
 
             include: {
+              owner: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                  role: true,
+                },
+              },
                 tags: true // returns tags 
             }
         });
@@ -121,9 +128,6 @@ async function handlerGet(req: TemplateRequest, res: TemplateResponse) {
       const numLimit = parseInt(limit, 10) || 10;
       const numPage = parseInt(page, 10) || 1;
   
-      if (numLimit > 20) {
-        return res.status(400).json({ error: "limit must be less than 20, limit too high." });
-      }
 
       let numForkedFromId;
   
@@ -190,9 +194,18 @@ async function handlerGet(req: TemplateRequest, res: TemplateResponse) {
         skip: (numPage - 1) * numLimit,
         take: numLimit,
         include: {
-          blogs: true,
-          tags: true,
-        },
+          owner: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              role: true,
+            },
+          },
+          tags: true, // returns tags 
+          blogs: true
+        }
       });
   
       const totalPages = Math.ceil(totalCount / numLimit);

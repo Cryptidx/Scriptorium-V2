@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import ReportPreview from "./reportPreview";
 
 interface ReportProps {
-  title: string;
-  description: string;
-  author: string;
-  tags: string[];
-  reportCount: number;
-  explanation: string[];
+    id: number;
+    title: string;
+    description: string;
+    flagged: boolean;
+    author: {firstName: string, lastName: string};
+    reportCount: number,
+    explanations: string[]
+    tags: Tag[]
 }
 
 interface ReportDropdownProps {
@@ -48,10 +50,10 @@ const ReportDropdown: React.FC<ReportDropdownProps> = ({ blogReports, commentRep
                     key={index}
                     title={report.title}
                     description={report.description}
-                    author={report.author}
-                    tags={report.tags}
+                    author={report.author.firstName + " " + report.author.lastName}
+                    tags={report.tags?.map((tag) => tag.name) || []}
                     reportCount={report.reportCount}
-                    explanation={report.explanation}
+                    explanation={report.explanations}
                 />
                 ))}
             </div>
@@ -71,10 +73,10 @@ const ReportDropdown: React.FC<ReportDropdownProps> = ({ blogReports, commentRep
                     key={index}
                     title={report.title}
                     description={report.description}
-                    author={report.author}
-                    tags={report.tags}
+                    author={report.author.firstName + " " + report.author.lastName}
+                    tags={report.tags?.map((tag) => tag.name) || []}
                     reportCount={report.reportCount}
-                    explanation={report.explanation}
+                    explanation={report.explanations}
                 />
                 ))}
             </div>

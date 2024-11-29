@@ -512,8 +512,8 @@ const BlogPage: React.FC = () => {
     setShowReportModal(true); // Show the modal
   };
 
-  const handleReportSubmit = (data: { explanation: string }) => {
-    console.log("Report Submitted for:", reportTitle, "Data:", data);
+  const handleReportSubmit = () => {
+    console.log("Report Submitted");
     setShowReportModal(false); // Close the modal after submission
   };
 
@@ -693,7 +693,8 @@ const BlogPage: React.FC = () => {
             </div>
   
             <ReportCreationModal
-              id={reportTitle}
+              id={id as string}
+              type={"BLOG"}
               isOpen={showReportModal}
               onClose={() => setShowReportModal(false)}
               onSubmit={handleReportSubmit}

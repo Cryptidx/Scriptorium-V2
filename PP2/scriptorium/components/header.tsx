@@ -176,10 +176,6 @@ const Header: React.FC = () => {
       router.push(user? "/home" : "/");
     };
 
-  
-    const showSearchBar = ["/home"].includes(router.pathname);
-  // const login = user != null;
-
   const [showModal, setShowModal] = useState(false);
 
   const handleCreateBlog = async (data: { title: string; description: string; tags: string[] }) => {
@@ -219,9 +215,6 @@ const Header: React.FC = () => {
           <p className="px-2 content-center">Scriptorium</p>
         </button>
       </div>
-
-
-      {showSearchBar && <SearchBar />}
      
       <nav className="flex items-center space-x-5">
         

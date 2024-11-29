@@ -6,13 +6,13 @@ import {Blog, Template} from "@types/global";
 export interface Template {
     id: number;
     ownerId: number;
-    name: string;
     code: string;
     language: string;
     title: string;
     explanation: string;
     forkedFromId?: number | null;
     wasForked: boolean;
+    owner: {firstName: string, lastName: string}
     createdAt: Date;
     updatedAt: Date;
     tags?: Tag[];
