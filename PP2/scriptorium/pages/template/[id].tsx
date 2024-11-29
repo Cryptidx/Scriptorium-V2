@@ -79,7 +79,7 @@ const TemplateEditor: React.FC = () => {
         if (!data?.template) return;
 
         setAuthorId(data.template.ownerId);
-        setAuthorName(data.template.name);
+        setAuthorName(data.template.owner.firstName + " " + data.template.owner.lastName)
         setTitle(data.template.title);
         setExplanation(data.template.explanation);
         setCode(data.template.code);
