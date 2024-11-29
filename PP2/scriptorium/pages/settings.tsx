@@ -29,8 +29,10 @@ interface Reports {
     flagged: boolean;
     author: {firstName: string, lastName: string};
     reportCount: number,
-    explanations: string[]
-    tags: Tag[]
+    explanations: string[],
+    blog: boolean,
+    tags?: Tag[],
+    report?: boolean
 }
 
 const Settings = () => {
@@ -46,6 +48,7 @@ const Settings = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [userTemps, setUserTemps] = useState<Template[]>([]);
   const [blogReports, setBlogReports] = useState<Reports[]>([]);
+  const [commentReports, setCommentReports] = useState<Reports[]>([]);
 
   const blogs = [
     {
@@ -197,7 +200,7 @@ const Settings = () => {
         const fetchBlogReports = async () => {
           try {
             const response = await apiCallText(
-              "/api/reports/report?page=1&pageSize=2&contentType=BLOG",
+              "/api/reports/report?page=1&pageSize=20&contentType=BLOG",
               {
                 method: "GET",
               }
@@ -216,6 +219,7 @@ const Settings = () => {
                   author: { firstName: "", lastName: "" },
                   reportCount: report.reportCount,
                   explanations: report.explanations,
+                    blog: true,
                   tags: [] as Tag[],
                 };
       
@@ -239,8 +243,54 @@ const Settings = () => {
             console.error("Error fetching blog reports:", error);
           }
         };
+
+        const fetchCommentReports = async () => {
+            try {
+              const response = await apiCallText(
+                "/api/reports/report?page=1&pageSize=20&contentType=COMMENT",
+                {
+                  method: "GET",
+                }
+              );
+        
+              const data = JSON.parse(response);
+              if (!data || !data.data) return;
+        
+              const objects = await Promise.all(
+                data.data.map(async (report: Reports) => {
+                  const object = {
+                    id: report.id,
+                    title: report.title,
+                    description: report.description,
+                    flagged: report.flagged,
+                    author: { firstName: "", lastName: "" },
+                    blog: false,
+                    reportCount: report.reportCount,
+                    explanations: report.explanations,
+                  };
+        
+                  const blogResponse = await apiCallText(`/api/comment/${report.id}`, {
+                    method: "GET",
+                  });
+        
+                  const blogData = JSON.parse(blogResponse);
+                  object.author = {
+                    firstName: blogData.blog.author.firstName,
+                    lastName: blogData.blog.author.lastName,
+                  };
+        
+                  return object;
+                })
+              );
+        
+              setCommentReports(objects);
+            } catch (error) {
+              console.error("Error fetching blog reports:", error);
+            }
+          };
         if (role === "SYS_ADMIN"){
             fetchBlogReports();
+            fetchCommentReports();
             setLoading(false);
         }
       }, [role]);
@@ -334,7 +384,7 @@ const Settings = () => {
                     ) : ( <>
                             <ReportDropdown
                                 blogReports={blogReports} // Array of blog report objects
-                                commentReports={[]} // Array of comment report objects
+                                commentReports={commentReports} // Array of comment report objects
                                 wrapped={wrapped} // Set this to true or false based on your layout needs
                             />
                         </>

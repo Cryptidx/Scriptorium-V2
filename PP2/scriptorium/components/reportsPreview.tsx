@@ -9,7 +9,8 @@ interface ReportProps {
     author: {firstName: string, lastName: string};
     reportCount: number,
     explanations: string[]
-    tags: Tag[]
+    blog: boolean
+    tags?: Tag[]
 }
 
 interface ReportDropdownProps {
@@ -48,12 +49,15 @@ const ReportDropdown: React.FC<ReportDropdownProps> = ({ blogReports, commentRep
               {blogReports.map((report, index) => (
                 <ReportPreview
                     key={index}
+                    id={report.id}
                     title={report.title}
                     description={report.description}
                     author={report.author.firstName + " " + report.author.lastName}
                     tags={report.tags?.map((tag) => tag.name) || []}
                     reportCount={report.reportCount}
                     explanation={report.explanations}
+                    flagged={report.flagged}
+                    blog={report.blog}
                 />
                 ))}
             </div>
@@ -71,12 +75,15 @@ const ReportDropdown: React.FC<ReportDropdownProps> = ({ blogReports, commentRep
               {commentReports.map((report, index) => (
                 <ReportPreview
                     key={index}
+                    id={report.id}
                     title={report.title}
                     description={report.description}
                     author={report.author.firstName + " " + report.author.lastName}
                     tags={report.tags?.map((tag) => tag.name) || []}
                     reportCount={report.reportCount}
                     explanation={report.explanations}
+                    flagged={report.flagged}
+                    blog={report.blog}
                 />
                 ))}
             </div>
