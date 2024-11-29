@@ -4,7 +4,7 @@ import { Comment } from "@/common/icons";
 
 interface CommentButtonProps {
   initialCount: number; // Initial number of comments/replies
-  onAddComment: () => Promise<number>; // API call to fetch updated count
+  onAddComment: any;
 }
 
 

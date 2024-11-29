@@ -106,10 +106,16 @@ async function handlerUpdate(req:BlogRequestID,res:BlogResponseID){
     if (upvotes !== undefined) updateData.upvotes = upvotes;
     if (downvotes !== undefined) updateData.downvotes = downvotes;
 
-    if(!title && !description && !tags && !flagged && !upvotes && !downvotes){
+    // if(!title && !description && !tags && !flagged && !upvotes && !downvotes){
+    //     console.log("ahhhh")
+    //     console.log(upvotes)
+    //     return res.status(400).json({ error: "Nothing provided to update" });
+    // }
+    if(!title && !description && !tags && !flagged && (upvotes === undefined || upvotes === null) &&
+    (downvotes === undefined || downvotes === null)){
         return res.status(400).json({ error: "Nothing provided to update" });
     }
-    
+
     try{
         const blog = await prisma.blog.findUnique({
             where: { id: blogId },

@@ -67,6 +67,7 @@ declare global {
   downvotes: number;
   reports: string[];
   }
+  
   interface Comment {
     id: number;
     blogId: number; // Foreign key to Blog

@@ -477,6 +477,11 @@ interface Tag {
     name: string
 }
 
+interface Comment{
+    id: number;
+    description: string;
+}
+
 interface Blog {
   id: string;
   title: string;
@@ -485,8 +490,8 @@ interface Blog {
   authorId: string;
   flagged: boolean;
   tags: Tag[];
-  upvotes?: string;
-  downvotes?: string;
+  upvotes: string;
+  downvotes: string;
 }
 
 const BlogPage: React.FC = () => {
@@ -512,14 +517,17 @@ const BlogPage: React.FC = () => {
     setShowReportModal(false); // Close the modal after submission
   };
 
-  const handleAddComment = async (): Promise<number> => {
-    // Simulate an API call to add a comment and fetch the updated count
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(5); // Simulate the new comment count
-      }, 500);
-    });
-  };
+//   const handleAddComment =  async (data: {description: string }) => {
+//     // Simulate an API call to add a comment and fetch the updated count
+//     try {
+//         await apiCall(`/api/blog/${id}/comment`, {method: "POST",body: JSON.stringify(data)});
+//         // await the call 
+//     } catch (error) {
+        
+//     }
+//   };
+
+    const handleAddComment = ()=>{}
 
   // Fetch blog data on the client
   useEffect(() => {
@@ -665,14 +673,14 @@ const BlogPage: React.FC = () => {
                   upvoteActiveIcon={<ThumbsUpF className="object-scale-down h-5 w-5" />}
                   downvoteIcon={<ThumbsDown className="object-scale-down h-5 w-5" />}
                   downvoteActiveIcon={<ThumbsDownF className="object-scale-down h-5 w-5" />}
-                  initialText="0"
-                  changeText="1"
+                  upvotes={blog.upvotes}
+                  downvotes={blog.downvotes}
                 />
               </div>
   
-              <div>
+              {/* <div>
                 <CommentButton initialCount={4} onAddComment={handleAddComment} />
-              </div>
+              </div> */}
   
               <div className={`inline-flex items-center  rounded-full shadow-sm border-2 pr-2 pl-2 ${flagged ? "bg-red-500 border-red-800  " : "bg-gray-200 border-gray-500 "}`}>
                 <button
@@ -704,12 +712,12 @@ const BlogPage: React.FC = () => {
                 Sort by <span className="inline-block -translate-y-0.5">⌄</span>
               </button>
             }
-            items={[{ label: "Juiciest", link: "/home" }]}
+            items={[{ label: "Juiciest", link: `/blog/${id}` }]}
           />
   
           {/* <h2 className="mt-8 text-md font-semibold">Comment Section</h2> */}
   
-          {/* <CommentSection /> */}
+          <CommentSection />
         </div>
   
         {showEditModal && (
