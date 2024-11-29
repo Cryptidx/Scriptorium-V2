@@ -32,7 +32,7 @@ const TemplatePage: React.FC<TemplatePageProps> = ({ data }) => {
       {data.map((template) => (
             <div key={template.id} onClick={() => handleBlogClick(template.id.toString())}>          
           <BlogPreview
-            title={template.title}
+            title={truncateDescription(template.title || "No title", 50)}
             description={truncateDescription(template.explanation || "No description", 50)}
             author={
               template.owner
