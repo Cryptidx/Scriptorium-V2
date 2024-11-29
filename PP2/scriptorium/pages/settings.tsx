@@ -314,7 +314,7 @@ const Settings = () => {
                     <>
                         <h2 className={`${wrapped ? 'text-2xl' : 'text-3xl'} mt-6 font-bold`}>Templates:</h2>
 
-                        {blogs.length === 0 ? (
+                        {userTemps.length === 0 ? (
                         <h2 className={`${wrapped ? 'text-xl' : 'text-2xl'} mt-3 font-normal`}>User has no templates</h2>
                         ) : (
                         <div className={`mt-6 flex flex-col overflow-y-auto max-h-[300px] min-w-[100px] ${wrapped ? '' : 'flex-col overflow-y-auto max-h-[300px]'} border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}>

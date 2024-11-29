@@ -86,6 +86,7 @@ import ReportCreationModal from "./modals/ReportCreationModal";
 import { useUser } from "@/context/userContextHeader";
 import { useRouter } from "next/router";
 import { apiCall } from "@/utils/auth-api-w-refresh";
+import ReportPopUp from "./reportPopUp";
 
 interface CommentProps {
   comment: Comment;
@@ -112,6 +113,7 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
   const [hasMoreReplies, setHasMoreReplies] = useState(true);
   const [replyPage, setReplyPage] = useState(1);
   const [replyInputVisible, setReplyInputVisible] = useState(false);
+  const [showReports, setShowReports] = useState(false);
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportComment, setReportComment] = useState("");
@@ -201,7 +203,8 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
                 You've been reported
                 </div>
                 <div>
-                    <button className="px-2  bg-red-500 text-white rounded-lg">
+                    <button className="px-2  bg-red-500 text-white rounded-lg"
+                    onClick={() => setShowReports(true)}>
                     Why?
                     </button>
                     
@@ -251,6 +254,13 @@ const CommentBox: React.FC<CommentProps> = ({ comment, level }) => {
                   isOpen={showReportModal}
                   onClose={() => setShowReportModal(false)}
                   onSubmit={handleReportSubmit}
+                />
+
+                <ReportPopUp
+                  isOpen={showReports}
+                  onClose={() => setShowReports(false)}
+                  blogId={Number(id as string)}
+                  type={"comment"}
                 />
               </div>
             </div>
