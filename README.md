@@ -1,3 +1,5 @@
+
+
 <h2> Steps to get started: </h2>
 
 <ol>
@@ -17,3 +19,5 @@
   <li> Fork existing templates provided by the community to get a head start on your creative pursits</li>
   <li> Comment on blogs and upvote on them as well (comments can also be upvoted) </li>
 </ol>
+
+go on... try it out 😊
