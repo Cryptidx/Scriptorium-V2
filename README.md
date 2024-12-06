@@ -9,6 +9,7 @@
 
 
 <h2> What can you do on scriptorium? </h2>
+<p> <i> Here are some common use cases: </i></p>
 <ol>
   <li> Write quick code in our system which supports 10+ popular languages </li>
   <li> Create blogs about whatever you'd like (within appropriate community standards). Although we'd prefer for 
