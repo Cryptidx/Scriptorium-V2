@@ -68,28 +68,7 @@ export   const fetchCurrentUser = async () => {
     return { id: "user123", name: "Jane Doe" }; // Simulated logged-in user
   };
 
-
-// export const simulateBlogCreationAPI = async (data: {
-//   title: string;
-//   description: string;
-//   tags: string[];
-// }) => {
-//   return new Promise<{ id: string; title: string; description: string; tags: string[] }>((resolve) => {
-//     setTimeout(() => {
-//       let newBlog =  {
-//         id: Math.random().toString(36).substring(2, 9), // Simulate a unique blog ID
-//         title: data.title,
-//         description: data.description,
-//         tags: data.tags,
-//       }
-
-//       localStorage.setItem(`${newBlog.id}`, JSON.stringify(newBlog));
-//       resolve(
-//         newBlog
-//       );
-//     }, 1000); // Simulate network delay
-//   });
-// };
+  
 export const simulateBlogCreationAPI = async (data: {
   title: string;
   description: string;
@@ -116,20 +95,7 @@ export const simulateBlogCreationAPI = async (data: {
   });
 };
 
-// export const simulateBlogEditAPI = async (id: string, data: { title: string; description: string; tags: string[] }) => {
-//   return new Promise<{ id: string; title: string; description: string; tags: string[] }>((resolve) => {
-//     setTimeout(() => {
-//       const updatedBlog = {
-//         id,
-//         title: data.title,
-//         description: data.description,
-//         tags: data.tags,
-//       };
-//       localStorage.setItem(id, JSON.stringify(updatedBlog));
-//       resolve(updatedBlog);
-//     }, 1000); // Simulate a delay
-//   });
-// };
+
 export const simulateBlogEditAPI = async (
   id: string,
   data: { title: string; description: string; tags: string[] }
