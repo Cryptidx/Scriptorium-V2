@@ -266,8 +266,8 @@ const Header: React.FC = () => {
               {/* Theme Toggle */}
               <button
                   onClick={toggleTheme}
-                  className="px-4 py-2 bg-blue-500 dark:bg-yellow-400 text-white dark:text-black rounded transition"
-              >
+                  className="px-4 py-2 bg-blue-500 dark:bg-yellow-400 text-white dark:text-black rounded transition hover:opacity-90"
+                  >
                     {theme === "light" ? <MoonIcon className="h-6 w-6" /> : <SunIcon className="h-6 w-6" />}
               </button>
             </nav>

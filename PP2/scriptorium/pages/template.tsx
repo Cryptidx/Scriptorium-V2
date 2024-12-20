@@ -144,23 +144,24 @@ const TemplateEditor: React.FC = () => {
             {/* Right Side: Output and Template Info */}
             <div className="flex-[0.8] flex flex-col space-y-6 overflow-auto mt-4 lg:mt-0 lg:ml-4">
             {/* Input Section */}
-               <textarea
-                  id="user-input"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg w-full resize-none overflow-auto h-[150px]"
-                  placeholder="Enter your input here"
-                ></textarea>
+            <textarea
+              id="user-input"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg w-full resize-none overflow-auto h-[150px] bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+              placeholder="Enter your input here"
+            />
+
 
 
               {/* Output Section */}
-              <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2">
-              <OutputComponent stdout={output} stderr={error} />
+              <div className="flex-1 flex flex-col border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+                <OutputComponent stdout={output} stderr={error} />
               </div>
     
               {/* Template Info Section */}
               {id !== -1 && <div
-                className={`mt-4 lg:mt-0 flex flex-col flex-[0.7] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2`}
+                className={`mt-4 lg:mt-0 flex flex-col flex-[0.7] border border-gray-300 dark:border-gray-700 rounded-lg p-4 space-y-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-white`}
               >
                 <TemplateInfo
                   author={authorName}

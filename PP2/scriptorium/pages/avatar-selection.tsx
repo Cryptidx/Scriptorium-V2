@@ -118,28 +118,30 @@ const AvatarSelectionPage = () => {
   };
   
   return (
-    <div className="h-screen flex flex-col">
-      <div className="flex-1 flex items-center justify-center py-10">
-        <div className="flex flex-col items-center justify-center bg-white w-[90%] h-[90%] shadow-lg px-10 rounded-lg">
-          <h1 className="text-2xl font-bold mb-6">Select Your Avatar</h1>
+<div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-black dark:text-white">
+<div className="flex-1 flex items-center justify-center py-10">
+      <div className="flex flex-col items-center justify-center bg-white dark:bg-gray-800 w-[90%] h-[90%] shadow-lg px-10 rounded-lg">
+      <h1 className="text-2xl font-bold mb-6">Select Your Avatar</h1>
           <div className="grid grid-cols-3 gap-6">
             {avatarImages.map((src, index) => (
               <AvatarPanel
+              
                 key={index}
                 src={src}
                 isSelected={selectedIndex === index}
                 onClick={() => setSelectedIndex(index)}
+                
               />
             ))}
           </div>
 
-          {loading && <p className="text-sm text-blue-500 mt-4">Updating avatar...</p>}
-          {error && <p className="text-sm text-red-500 mt-4">{error}</p>}
-          {successMessage && <p className="text-sm text-green-500 mt-4">{successMessage}</p>}
+          {loading && <p className="text-sm dark:text-blue-400 mt-4">Updating avatar...</p>}
+          {error && <p className="text-sm text-red-500  dark:text-red-400 mt-4">{error}</p>}
+          {successMessage && <p className="text-sm text-green-500 dark:text-green-400  mt-4">{successMessage}</p>}
 
           <button
             onClick={handleUpdateAvatar}
-            className="w-48 bg-[#132D5F] text-white p-2 rounded-md mt-4 hover:bg-[#0f2440] transition text-center"
+            className="w-48 bg-[#132D5F] dark:bg-[#1E3A8A] text-white p-2 rounded-md mt-4 hover:bg-[#0f2440] dark:hover:bg-[#0C2A5A] transition text-center"
             disabled={loading}
           >
             {loading ? "Updating..." : "Done"}

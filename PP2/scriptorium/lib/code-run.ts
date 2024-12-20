@@ -86,11 +86,31 @@ async function runDocker(command: string, args: string[], stdin: string[]) {
         // capture stdout and stderr
         process.stdout.on("data", (data: Buffer) => stdout += data.toString());
         process.stderr.on("data", (data: Buffer) => stderr += data.toString());
+        process.on('SIGTERM', () => {
+            alert("Process Took Too Long")
+            process.kill(process.pid, 'SIGKILL');
+        });
+
+        let crash = false;
+
+        const timeout = setTimeout(() => {
+            console.log("Process took too long, sending SIGKILL...");
+            process.kill('SIGKILL'); // Immediately terminate the process if timeout exceeds
+            crash = true;
+        }, 10000);
 
         // wait for the process to close
         const code = await new Promise((resolve) => {
             process.on('close', resolve);
         });
+
+        process.on('close', () => {
+            clearTimeout(timeout);  // Clear the timeout once process closes
+        });
+
+        if (crash) {
+            stderr = "Code took too long";
+        }
 
         // return output
         return [code, stdout, stderr];
@@ -131,8 +151,7 @@ async function fileRun(lang: string, code: string, inputs = []) {
             '-v', // mounts file
             `${codeFile}:/app/code` + fileExtension, // file to mount
             '--memory=512m', // sets maximum memory usage
-            '--memory-swappiness=0', // disables memory swapping
-            '--stop-timeout', '30', // kills program after 30 seconds
+            '--stop-timeout', '10', // kills program after 30 seconds
             dockerImage // docker image to create container of
         ];
         

@@ -76,13 +76,14 @@ const CommentPreview: React.FC<CommentPreviewProps> = ({
           <div className="flex items-center space-x-1">
             <ThumbsUpF className="object-scale-down h-5 w-5" />
             <p>{upvotes}</p>
-          </div>
+            </div>
 
           {/* Downvotes */}
           <div className="flex items-center space-x-1">
             <ThumbsDownF className="object-scale-down h-5 w-5" />
             <p>{downvotes}</p>
           </div>
+
 
           {/* Blog Link */}
           <p className="underline cursor-pointer">See blog</p>

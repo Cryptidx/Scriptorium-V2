@@ -79,6 +79,9 @@ const BlogPage: React.FC = () => {
     setShowReportModal(false); // Close the modal after submission
   };
 
+
+    const handleAddComment = ()=>{}
+
   // Fetch blog data on the client
   useEffect(() => {
     const fetchBlog = async () => {
@@ -152,16 +155,16 @@ const BlogPage: React.FC = () => {
   console.log("am i flagged", flagged)
 
      return (
-      <div className="h-screen flex flex-col">
+      <div className="h-screen flex flex-col  dark:bg-gray-900 dark:text-white">
         <div className="flex flex-col content-center mt-5 space-y-1">
             
             {flagged && (<div className="flex flex-col items-end content-center mr-16 text-xs font-bold">
                 <div className="flex flex-col items-center">
-                <div className="underline">
+                <div className="underline text-gray-900 dark:text-white">
                 You've been reported
                 </div>
                 <div>
-                    <button className="px-2 py-2 bg-red-500 text-white rounded-lg"
+                    <button className="px-2 py-2 bg-red-500 text-white rounded-lg  hover:bg-red-600 dark:hover:bg-red-700"
                     onClick={() => setShowReports(true)}>
                     Why?
                     </button>
@@ -175,7 +178,7 @@ const BlogPage: React.FC = () => {
         
           <div className="flex justify-center">
             <div className="flex flex-wrap">
-            <h1 className="text-3xl font-bold break-words text-center max-w-[50%] mx-auto">{blog.title}</h1>
+            <h1 className="text-3xl font-bold dark:text-white ">{blog.title}</h1>
             </div>
             
             
@@ -215,8 +218,8 @@ const BlogPage: React.FC = () => {
         </div>
   
         <div className="flex-1 flex items-center justify-center py-4">
-          <main className="flex flex-col break-words items-start justify-start bg-white w-[95%] h-[95%] shadow-lg px-10 pt-10 pb-[25%] ">
-            <div className="max-w-[100%]">
+          <main className="flex flex-col break-words items-start justify-start bg-white dark:bg-gray-800 w-[95%] h-[95%] shadow-lg px-10 pt-10 pb-[25%] ">
+            <div className="max-w-[100%] dark:text-white">
             <p>{blog.description}</p>
             </div>
             
@@ -304,7 +307,7 @@ const BlogPage: React.FC = () => {
         type={"blog"}
       />
   
-        <hr className="w-[95%] border-t-2 border-gray-300 my-4 mx-auto"></hr>
+        <hr className="w-[95%] border-t-2 border-gray-300 my-4 mx-auto dark:border-gray-700"></hr>
   
         <div className="flex flex-col items-start px-10 space-y-4">
           <PageDropDown
